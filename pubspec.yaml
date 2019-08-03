@@ -20,6 +20,8 @@ dependencies:
   flutter:
     sdk: flutter
   curved_navigation_bar: ^0.1.2 #latest version
+  intl: 0.15.8 #Time & Date formats
+  datetime_picker_formfield: ^0.1.8 #Date & Time picker
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2

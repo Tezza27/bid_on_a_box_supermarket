@@ -3,6 +3,7 @@ import './history_screen.dart';
 import './new_lot_screen.dart';
 import './analysis_screen.dart';
 import './utils/colours.dart';
+import './contact_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 void main(){
@@ -119,7 +120,7 @@ class BottomNavBar extends StatefulWidget {
 
 class _BottomNavBarState extends State<BottomNavBar> {
   int _page = 0;
-  final _pageOption = [HistoryScreen(), NewLotScreen(), AnalysisScreen()];
+  final _pageOption = [HistoryScreen(), NewLotScreen(), AnalysisScreen(), ContactScreen()];
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +132,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
         items: <Widget>[
           Icon(Icons.history, size: 30),
           Icon(Icons.add_circle, size: 30),
-          Icon(Icons.assessment, size: 30)
+          Icon(Icons.assessment, size: 30),
+          Icon(Icons.mail, size: 30)
         ],
         onTap: (index) {
           setState(() {
