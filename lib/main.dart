@@ -55,7 +55,7 @@ void main(){
             color: copy_01Color,
             fontFamily: "Roboto",
             fontWeight: FontWeight.w700,
-            fontSize: 32),
+            fontSize: 24),
         //AppBar Text
         headline:TextStyle(
             color: copy_01Color,

@@ -15,6 +15,7 @@ class _NewLotState extends State<NewLotScreen> {
   var _formKey = GlobalKey<FormState>();
   DateTime _currentDate = DateTime.now();
   TimeOfDay _closingTime = TimeOfDay(hour: 21, minute: 00);
+  TimeOfDay _collectionTime = TimeOfDay(hour: 23, minute: 00);
   var _boxContentsTypes = [
     "Ambient Grocery",
     "Butchery",
@@ -49,6 +50,8 @@ class _NewLotState extends State<NewLotScreen> {
   TextEditingController _charityPCController = TextEditingController();
   TextEditingController _closingDateController = TextEditingController();
   TextEditingController _closingTimeController = TextEditingController();
+  TextEditingController _collectionDateController = TextEditingController();
+  TextEditingController _collectionTimeController = TextEditingController();
 
   @override
   void initState() {
@@ -56,7 +59,9 @@ class _NewLotState extends State<NewLotScreen> {
     _currentBoxTypeSelected = _boxContentsTypes[0];
     _currentCharityNameSelected = _charityNames[0];
     _closingDateController.text = DateFormat('dd/MM/yy').format(_currentDate);
-    //_closingTimeController.text = _closingTime.toString("HH\:mm");
+    _closingTimeController.text = _closingTime.toString();
+    _collectionDateController.text = DateFormat('dd/MM/yy').format(_currentDate);
+    _collectionTimeController.text = _collectionTime.toString();
   }
 
   @override
@@ -162,6 +167,70 @@ class _NewLotState extends State<NewLotScreen> {
                                     labelText: "Closing Date",
                                     border: OutlineInputBorder(
                                         borderRadius:
+                                        BorderRadius.circular(5.0))),
+                              ),
+                            )),
+                        Flexible(
+                            flex: 2,
+                            child: Center(
+                              child: Container(
+                                child: Ink(
+                                  decoration: ShapeDecoration(
+                                      shape: CircleBorder(),
+                                      color: Theme.of(context).buttonColor),
+                                  child: IconButton(
+                                      icon: Icon(Icons.date_range),
+                                      onPressed: null),
+                                ),
+                              ),
+                            )),
+                        Flexible(
+                            flex: 4,
+                            child: Padding(
+                              padding:
+                              const EdgeInsets.only(right: 8.0, left: 8.0),
+                              child: TextFormField(
+                                keyboardType: TextInputType.number,
+                                controller: _closingTimeController,
+                                decoration: InputDecoration(
+                                    labelText: "Closing Time",
+                                    border: OutlineInputBorder(
+                                        borderRadius:
+                                        BorderRadius.circular(5.0))),
+                              ),
+                            )),
+                        Flexible(
+                          flex: 2,
+                          child: Center(
+                            child: Container(
+                              child: Ink(
+                                decoration: ShapeDecoration(
+                                    shape: CircleBorder(),
+                                    color: Theme.of(context).buttonColor),
+                                child: IconButton(
+                                    icon: Icon(Icons.access_time),
+                                    onPressed: null),
+                              ),
+                            ),
+                          ),
+                        )
+                      ]),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Row(children: <Widget>[
+                        Flexible(
+                            flex: 4,
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: TextFormField(
+                                //Closing Date
+                                keyboardType: TextInputType.datetime,
+                                controller: _collectionDateController,
+                                decoration: InputDecoration(
+                                    labelText: "Collection Date",
+                                    border: OutlineInputBorder(
+                                        borderRadius:
                                             BorderRadius.circular(5.0))),
                               ),
                             )),
@@ -186,9 +255,9 @@ class _NewLotState extends State<NewLotScreen> {
                                   const EdgeInsets.only(right: 8.0, left: 8.0),
                               child: TextFormField(
                                 keyboardType: TextInputType.number,
-                                controller: _closingTimeController,
+                                controller: _collectionTimeController,
                                 decoration: InputDecoration(
-                                    labelText: "Closing Time",
+                                    labelText: "Collection Time",
                                     border: OutlineInputBorder(
                                         borderRadius:
                                             BorderRadius.circular(5.0))),
@@ -218,25 +287,25 @@ class _NewLotState extends State<NewLotScreen> {
                           children: <Widget>[
                             Flexible(
                                 flex: 20,
-                                child: DropdownButton<String>(
-                                  //Charity selector
-                                  isExpanded: true,
-                                  items: _charityNames.map((String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  }).toList(),
-                                  value: _currentCharityNameSelected,
-                                  onChanged: (String newCharitySelected) {
-                                    _onDropdownCharitySelected(
-                                        newCharitySelected);
-                                  },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: DropdownButton<String>(
+                                    //Charity selector
+                                    isExpanded: true,
+                                    items: _charityNames.map((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    }).toList(),
+                                    value: _currentCharityNameSelected,
+                                    onChanged: (String newCharitySelected) {
+                                      _onDropdownCharitySelected(
+                                          newCharitySelected);
+                                    },
+                                  ),
                                 )),
-                            Flexible(
-                              flex: 1,
-                              child: Container(),
-                            ),
+
                             Flexible(
                                 flex: 5,
                                 child: TextFormField(
