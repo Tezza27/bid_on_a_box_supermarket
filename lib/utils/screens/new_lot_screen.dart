@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'history_screen.dart';
-import './utils/colours.dart';
+import 'package:bid_on_a_box_supermarket/utils/screens/history_screen.dart';
+import 'package:bid_on_a_box_supermarket/utils/colours.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
 

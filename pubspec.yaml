@@ -19,6 +19,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  cloud_firestore: ^0.12.9
   curved_navigation_bar: ^0.1.2 #latest version
   intl: 0.15.8 #Time & Date formats
   datetime_picker_formfield: ^0.1.8 #Date & Time picker

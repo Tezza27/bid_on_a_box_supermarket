@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import './history_screen.dart';
-import './new_lot_screen.dart';
-import './analysis_screen.dart';
+import 'package:bid_on_a_box_supermarket/utils/screens/history_screen.dart';
+import 'package:bid_on_a_box_supermarket/utils/screens/new_lot_screen.dart';
+import 'package:bid_on_a_box_supermarket/utils/screens/analysis_screen.dart';
 import './utils/colours.dart';
-import './contact_screen.dart';
+import 'package:bid_on_a_box_supermarket/utils/screens/contact_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 void main(){
@@ -20,7 +20,7 @@ void main(){
 //          primaryColorDark: ,
 //          canvasColor: ,
       scaffoldBackgroundColor: whiteColor,
-//          cardColor: ,
+          cardColor: whiteColor,
 //          dividerColor: ,
 //          focusColor: ,
 //          hoverColor: ,
@@ -36,7 +36,7 @@ void main(){
 //          backgroundColor: ,
 //          dialogBackgroundColor: ,
 //          indicatorColor: ,
-//          hintColor: ,
+          hintColor: accent_03Color,
 //          errorColor: ,
 //          toggleableActiveColor: ,
 
