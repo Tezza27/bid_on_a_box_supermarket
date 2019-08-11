@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:bid_on_a_box_supermarket/utils/models/box_class.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 class NewLotScreen extends StatefulWidget {
   @override
@@ -21,7 +20,6 @@ class _NewLotState extends State<NewLotScreen> {
   DateTime closingDate;
   String _closingTime = "21:00";
   String _collectionTime = "23:00";
-  DateTime _finalDate = DateTime.now().add(Duration(days: 366));
   var _boxContentsTypes = [
     "",
     "Ambient Grocery",
@@ -206,7 +204,8 @@ class _NewLotState extends State<NewLotScreen> {
                                       color: Theme.of(context).buttonColor),
                                   child: IconButton(
                                     icon: Icon(Icons.date_range),
-                                    onPressed: () => _selectDate(context, whichCalendar: 1),
+                                    onPressed: () =>
+                                        _selectDate(context, whichCalendar: 1),
                                   ),
                                 ),
                               ),
@@ -227,21 +226,21 @@ class _NewLotState extends State<NewLotScreen> {
                               ),
                             )),
                         Flexible(
-                          flex: 2,
-                          child: Center(
-                            child: Container(
-                              child: Ink(
-                                decoration: ShapeDecoration(
-                                    shape: CircleBorder(),
-                                    color: Theme.of(context).buttonColor),
-                                child: IconButton(
+                            flex: 2,
+                            child: Center(
+                              child: Container(
+                                child: Ink(
+                                  decoration: ShapeDecoration(
+                                      shape: CircleBorder(),
+                                      color: Theme.of(context).buttonColor),
+                                  child: IconButton(
                                     icon: Icon(Icons.access_time),
-                                  onPressed: () => _selectTime(context, whichTime: 1),
+                                    onPressed: () =>
+                                        _selectTime(context, whichTime: 1),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        )
-                        )
+                            ))
                       ]),
                     ),
                     Padding(
@@ -271,8 +270,9 @@ class _NewLotState extends State<NewLotScreen> {
                                       shape: CircleBorder(),
                                       color: Theme.of(context).buttonColor),
                                   child: IconButton(
-                                      icon: Icon(Icons.date_range),
-                                    onPressed: () => _selectDate(context, whichCalendar: 2),
+                                    icon: Icon(Icons.date_range),
+                                    onPressed: () =>
+                                        _selectDate(context, whichCalendar: 2),
                                   ),
                                 ),
                               ),
@@ -293,21 +293,21 @@ class _NewLotState extends State<NewLotScreen> {
                               ),
                             )),
                         Flexible(
-                          flex: 2,
-                          child: Center(
-                            child: Container(
-                              child: Ink(
-                                decoration: ShapeDecoration(
-                                    shape: CircleBorder(),
-                                    color: Theme.of(context).buttonColor),
-                                child: IconButton(
+                            flex: 2,
+                            child: Center(
+                              child: Container(
+                                child: Ink(
+                                  decoration: ShapeDecoration(
+                                      shape: CircleBorder(),
+                                      color: Theme.of(context).buttonColor),
+                                  child: IconButton(
                                     icon: Icon(Icons.access_time),
-                                  onPressed: () => _selectTime(context, whichTime: 2),
+                                    onPressed: () =>
+                                        _selectTime(context, whichTime: 2),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        )
-                        )
+                            ))
                       ]),
                     ),
                     Padding(
@@ -370,11 +370,42 @@ class _NewLotState extends State<NewLotScreen> {
                       child: Row(
                         children: <Widget>[
                           Expanded(
+                            child: RaisedButton(
+                                //Sends the message
+                                child: Text("Add Items"),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30.0)),
+                                onPressed: () async {
+                                  BoxClass newBox = _prepareBox();
+                                  await db
+                                      .collection("boxes")
+                                      .add(newBox.toJson());
+                                  setState(() {
+                                    _reset();
+                                  });
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              HistoryScreen()));
+                                }),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
                             child: Padding(
                               padding: const EdgeInsets.only(right: 8.0),
                               child: RaisedButton(
                                   //Clears the contact text field
                                   child: Text("Cancel"),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(30.0)),
                                   onPressed: () {
                                     setState(() {
                                       _reset();
@@ -387,7 +418,10 @@ class _NewLotState extends State<NewLotScreen> {
                               padding: const EdgeInsets.only(left: 8.0),
                               child: RaisedButton(
                                   //Sends the message
-                                  child: Text("Send"),
+                                  child: Text("Upload"),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(30.0)),
                                   onPressed: () async {
                                     BoxClass newBox = _prepareBox();
                                     await db
@@ -463,7 +497,8 @@ class _NewLotState extends State<NewLotScreen> {
         double.parse(_charityPCController.text));
   }
 
-  Future<DateTime> _selectDate(BuildContext context, {int whichCalendar}) async {
+  Future<DateTime> _selectDate(BuildContext context,
+      {int whichCalendar}) async {
     final DateTime datePicked = await showDatePicker(
       context: context,
       initialDate: _currentDate,
@@ -474,10 +509,10 @@ class _NewLotState extends State<NewLotScreen> {
     if (datePicked != null && datePicked != _currentDate)
       setState(() {
         if (whichCalendar == 1) {
-          _closingDateController.text =
+          return _closingDateController.text =
               DateFormat('dd/MM/yy').format(datePicked).toString();
-        } else{
-          _collectionDateController.text =
+        } else {
+          return _collectionDateController.text =
               DateFormat('dd/MM/yy').format(datePicked).toString();
         }
       });
@@ -486,15 +521,18 @@ class _NewLotState extends State<NewLotScreen> {
   Future<TimeOfDay> _selectTime(BuildContext context, {int whichTime}) async {
     final TimeOfDay timePicked = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay(hour:int.parse(_closingTime.split(":")[0]),minute: int.parse(_closingTime.split(":")[1])),
-
+      initialTime: TimeOfDay(
+          hour: int.parse(_closingTime.split(":")[0]),
+          minute: int.parse(_closingTime.split(":")[1])),
     );
     if (timePicked != null && timePicked != _closingTime)
       setState(() {
         if (whichTime == 1) {
-          _closingTimeController.text ="${timePicked.hour}:${timePicked.minute}";
-        } else{
-          _collectionTimeController.text ="${timePicked.hour}:${timePicked.minute}";
+          return _closingTimeController.text =
+              "${timePicked.hour}:${timePicked.minute}";
+        } else {
+          return _collectionTimeController.text =
+              "${timePicked.hour}:${timePicked.minute}";
         }
       });
   }

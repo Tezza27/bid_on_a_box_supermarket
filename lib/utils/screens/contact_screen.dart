@@ -90,6 +90,7 @@ class _ContactState extends State<ContactScreen> {
                           child: RaisedButton(
                               //Clears the contact text field
                               child: Text("Cancel"),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
                               onPressed: () {
 //                  Navigator.push(
 //                      context,
@@ -104,6 +105,7 @@ class _ContactState extends State<ContactScreen> {
                           child: RaisedButton(
                               //Sends the message
                               child: Text("Send"),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
                               onPressed: () {
 //                  Navigator.push(
 //                      context,
