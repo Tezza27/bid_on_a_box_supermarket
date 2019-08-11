@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:bid_on_a_box_supermarket/utils/models/history_card.dart';
-import 'package:bid_on_a_box_supermarket/utils/test_data/box_list.dart';
+import 'package:bid_on_a_box_supermarket/utils/templates/history_card.dart';
 
 
 class HistoryScreen extends StatelessWidget{
@@ -16,7 +15,7 @@ class HistoryScreen extends StatelessWidget{
         child: Container(
           child: ListView.builder(
               shrinkWrap: true,
-              itemCount: boxList.length,
+              itemCount: 0, //boxList.length,
               itemBuilder: (BuildContext context, int index) =>
                   buildHistoryCard(context, index)),
 

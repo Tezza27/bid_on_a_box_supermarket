@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:bid_on_a_box_supermarket/utils/screens/history_screen.dart';
 import 'package:bid_on_a_box_supermarket/utils/colours.dart';
 import 'package:intl/intl.dart';
+import 'package:bid_on_a_box_supermarket/utils/models/box_class.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 class NewLotScreen extends StatefulWidget {
   @override
@@ -12,11 +15,15 @@ class NewLotScreen extends StatefulWidget {
 }
 
 class _NewLotState extends State<NewLotScreen> {
+  final db = Firestore.instance;
   var _formKey = GlobalKey<FormState>();
   DateTime _currentDate = DateTime.now();
-  TimeOfDay _closingTime = TimeOfDay(hour: 21, minute: 00);
-  TimeOfDay _collectionTime = TimeOfDay(hour: 23, minute: 00);
+  DateTime closingDate;
+  String _closingTime = "21:00";
+  String _collectionTime = "23:00";
+  DateTime _finalDate = DateTime.now().add(Duration(days: 366));
   var _boxContentsTypes = [
+    "",
     "Ambient Grocery",
     "Butchery",
     "Chilled",
@@ -29,7 +36,7 @@ class _NewLotState extends State<NewLotScreen> {
     "Veg"
   ];
   var _charityNames = [
-    "None",
+    "",
     "Charity 1",
     "Charity 2",
     "Charity 3",
@@ -41,7 +48,6 @@ class _NewLotState extends State<NewLotScreen> {
     "Charity 9",
     "Charity 10"
   ];
-  DateTime closingDate;
   var _currentBoxTypeSelected = "";
   var _currentCharityNameSelected = "";
   TextEditingController _descriptionController = TextEditingController();
@@ -53,15 +59,35 @@ class _NewLotState extends State<NewLotScreen> {
   TextEditingController _collectionDateController = TextEditingController();
   TextEditingController _collectionTimeController = TextEditingController();
 
+  //These account variables are being set here for testing purposes.
+  //When the app is complete, they will be established as part of
+  //the sign up process
+  final String storeID = "0389";
+  final String regionID = "South-West";
+  final String storeName = "Bodmin Superstore";
+  final String storeAddress1 = "Launceston Road";
+  final String storeAddress2 = "";
+  final String storeTown = "Bodmin";
+  final String storeCounty = "Cornwall";
+  final String storePostcode = "PL31 2AR";
+  final String storeTelephone = "01208 261800";
+  final String storeMail = "terryrees@hotmail.com";
+  final String companyID = "ASD";
+  final String companyName = " Asda";
+  final String companyHQAddress1 = "Asda House Southbank";
+  final String companyHQAddress2 = "Great Wilson St";
+  final String companyHQAddress3 = "";
+  final String companyHQTown = "Leeds";
+  final String companyHQCounty = "West Yorkshire";
+  final String companyHQPostcode = "LS11 5AD";
+  final String companyContactName = "Dave Smith";
+  final String companyContactTelephone = "01132 555555";
+  final String companyVerifyMail = "terryrees@hotmail.com";
+
   @override
   void initState() {
     super.initState();
-    _currentBoxTypeSelected = _boxContentsTypes[0];
-    _currentCharityNameSelected = _charityNames[0];
-    _closingDateController.text = DateFormat('dd/MM/yy').format(_currentDate);
-    _closingTimeController.text = _closingTime.toString();
-    _collectionDateController.text = DateFormat('dd/MM/yy').format(_currentDate);
-    _collectionTimeController.text = _collectionTime.toString();
+    _reset();
   }
 
   @override
@@ -167,7 +193,7 @@ class _NewLotState extends State<NewLotScreen> {
                                     labelText: "Closing Date",
                                     border: OutlineInputBorder(
                                         borderRadius:
-                                        BorderRadius.circular(5.0))),
+                                            BorderRadius.circular(5.0))),
                               ),
                             )),
                         Flexible(
@@ -179,8 +205,9 @@ class _NewLotState extends State<NewLotScreen> {
                                       shape: CircleBorder(),
                                       color: Theme.of(context).buttonColor),
                                   child: IconButton(
-                                      icon: Icon(Icons.date_range),
-                                      onPressed: null),
+                                    icon: Icon(Icons.date_range),
+                                    onPressed: () => _selectDate(context, whichCalendar: 1),
+                                  ),
                                 ),
                               ),
                             )),
@@ -188,7 +215,7 @@ class _NewLotState extends State<NewLotScreen> {
                             flex: 4,
                             child: Padding(
                               padding:
-                              const EdgeInsets.only(right: 8.0, left: 8.0),
+                                  const EdgeInsets.only(right: 8.0, left: 8.0),
                               child: TextFormField(
                                 keyboardType: TextInputType.number,
                                 controller: _closingTimeController,
@@ -196,7 +223,7 @@ class _NewLotState extends State<NewLotScreen> {
                                     labelText: "Closing Time",
                                     border: OutlineInputBorder(
                                         borderRadius:
-                                        BorderRadius.circular(5.0))),
+                                            BorderRadius.circular(5.0))),
                               ),
                             )),
                         Flexible(
@@ -209,10 +236,11 @@ class _NewLotState extends State<NewLotScreen> {
                                     color: Theme.of(context).buttonColor),
                                 child: IconButton(
                                     icon: Icon(Icons.access_time),
-                                    onPressed: null),
+                                  onPressed: () => _selectTime(context, whichTime: 1),
                               ),
                             ),
                           ),
+                        )
                         )
                       ]),
                     ),
@@ -244,7 +272,8 @@ class _NewLotState extends State<NewLotScreen> {
                                       color: Theme.of(context).buttonColor),
                                   child: IconButton(
                                       icon: Icon(Icons.date_range),
-                                      onPressed: null),
+                                    onPressed: () => _selectDate(context, whichCalendar: 2),
+                                  ),
                                 ),
                               ),
                             )),
@@ -273,10 +302,11 @@ class _NewLotState extends State<NewLotScreen> {
                                     color: Theme.of(context).buttonColor),
                                 child: IconButton(
                                     icon: Icon(Icons.access_time),
-                                    onPressed: null),
+                                  onPressed: () => _selectTime(context, whichTime: 2),
                               ),
                             ),
                           ),
+                        )
                         )
                       ]),
                     ),
@@ -286,7 +316,7 @@ class _NewLotState extends State<NewLotScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Flexible(
-                                flex: 20,
+                                flex: 6,
                                 child: Padding(
                                   padding: const EdgeInsets.only(right: 8.0),
                                   child: DropdownButton<String>(
@@ -305,9 +335,23 @@ class _NewLotState extends State<NewLotScreen> {
                                     },
                                   ),
                                 )),
-
                             Flexible(
-                                flex: 5,
+                              flex: 2,
+                              child: Center(
+                                child: Container(
+                                  child: Ink(
+                                    decoration: ShapeDecoration(
+                                        shape: CircleBorder(),
+                                        color: Theme.of(context).buttonColor),
+                                    child: IconButton(
+                                        icon: Icon(Icons.info),
+                                        onPressed: null),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Flexible(
+                                flex: 2,
                                 child: TextFormField(
                                   //Charity percentage input field
                                   keyboardType: TextInputType.number,
@@ -323,15 +367,45 @@ class _NewLotState extends State<NewLotScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
-                      child: RaisedButton(
-                          //Upload lot to live auction and go to Account History Screen
-                          child: Text("Go To History Page"),
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => HistoryScreen()));
-                          }),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: RaisedButton(
+                                  //Clears the contact text field
+                                  child: Text("Cancel"),
+                                  onPressed: () {
+                                    setState(() {
+                                      _reset();
+                                    });
+                                  }),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: RaisedButton(
+                                  //Sends the message
+                                  child: Text("Send"),
+                                  onPressed: () async {
+                                    BoxClass newBox = _prepareBox();
+                                    await db
+                                        .collection("boxes")
+                                        .add(newBox.toJson());
+                                    setState(() {
+                                      _reset();
+                                    });
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                HistoryScreen()));
+                                  }),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ]))),
         ));
@@ -347,5 +421,81 @@ class _NewLotState extends State<NewLotScreen> {
     setState(() {
       this._currentCharityNameSelected = newCharitySelected;
     });
+  }
+
+  void _reset() {
+    _descriptionController.text = "";
+    _currentBoxTypeSelected = _boxContentsTypes[0];
+    _weightController.text = "";
+    _priceController.text = "";
+    _currentCharityNameSelected = _charityNames[0];
+    _charityPCController.text = "";
+    _closingDateController.text = DateFormat('dd/MM/yy').format(_currentDate);
+    _closingTimeController.text = _closingTime.toString();
+    _collectionDateController.text =
+        DateFormat('dd/MM/yy').format(_currentDate);
+    _collectionTimeController.text = _collectionTime.toString();
+  }
+
+  BoxClass _prepareBox() {
+    DateTime now = DateTime.now();
+    String startDate = DateFormat('dd/MM/yy').format(now);
+    String startTime = DateFormat('HH:mm').format(now);
+    String thisYear = now.year.toString();
+    String thisMonth = now.month.toString().padLeft(2, '0');
+    String thisDay = now.day.toString().padLeft(2, '0');
+    String thisHour = now.hour.toString().padLeft(2, '0');
+    String thisMinute = now.minute.toString().padLeft(2, '0');
+    String thisSecond = now.second.toString().padLeft(2, '0');
+    String _boxID =
+        "$companyID$storeID$thisYear$thisMonth$thisDay$thisHour$thisMinute$thisSecond";
+    return BoxClass(
+        _boxID,
+        _currentBoxTypeSelected,
+        startDate,
+        startTime,
+        _closingDateController.text,
+        _closingTimeController.text,
+        double.parse(_priceController.text),
+        _descriptionController.text,
+        double.parse(_weightController.text),
+        _currentCharityNameSelected,
+        double.parse(_charityPCController.text));
+  }
+
+  Future<DateTime> _selectDate(BuildContext context, {int whichCalendar}) async {
+    final DateTime datePicked = await showDatePicker(
+      context: context,
+      initialDate: _currentDate,
+      firstDate: DateTime(_currentDate.year, _currentDate.month),
+      lastDate: DateTime(
+          _currentDate.add(Duration(days: 366)).year, _currentDate.month),
+    );
+    if (datePicked != null && datePicked != _currentDate)
+      setState(() {
+        if (whichCalendar == 1) {
+          _closingDateController.text =
+              DateFormat('dd/MM/yy').format(datePicked).toString();
+        } else{
+          _collectionDateController.text =
+              DateFormat('dd/MM/yy').format(datePicked).toString();
+        }
+      });
+  }
+
+  Future<TimeOfDay> _selectTime(BuildContext context, {int whichTime}) async {
+    final TimeOfDay timePicked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour:int.parse(_closingTime.split(":")[0]),minute: int.parse(_closingTime.split(":")[1])),
+
+    );
+    if (timePicked != null && timePicked != _closingTime)
+      setState(() {
+        if (whichTime == 1) {
+          _closingTimeController.text ="${timePicked.hour}:${timePicked.minute}";
+        } else{
+          _collectionTimeController.text ="${timePicked.hour}:${timePicked.minute}";
+        }
+      });
   }
 }
