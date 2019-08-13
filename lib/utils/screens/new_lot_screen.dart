@@ -3,6 +3,7 @@ import 'package:bid_on_a_box_supermarket/utils/screens/history_screen.dart';
 import 'package:bid_on_a_box_supermarket/utils/colours.dart';
 import 'package:intl/intl.dart';
 import 'package:bid_on_a_box_supermarket/utils/models/box_class.dart';
+import 'package:bid_on_a_box_supermarket/utils/templates/add_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 
@@ -375,24 +376,23 @@ class _NewLotState extends State<NewLotScreen> {
                                 child: Text("Add Items"),
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30.0)),
-                                onPressed: () async {
-                                  BoxClass newBox = _prepareBox();
-                                  await db
-                                      .collection("boxes")
-                                      .add(newBox.toJson());
-                                  setState(() {
-                                    _reset();
-                                  });
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              HistoryScreen()));
+                                onPressed: (){
+                                  showDialog(context: context,
+                                  builder: (BuildContext context)=> AddItem(
+                                    title: "ADD AN ITEM",
+                                    description: "Type the name of the product into the space. \n\n"
+                                        "Click the ADD ITEM button to add your item to the list.\n\n"
+                                    "Click the FINISH button to add your final product to the list.\n\n"
+                                        "Use the CLEAR button to delete the contents of the entry space without saving to the list. ",
+
+                                  ),
+                                  );
                                 }),
                           ),
                         ],
                       ),
                     ),
+                    SizedBox(height: 24.0),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Row(

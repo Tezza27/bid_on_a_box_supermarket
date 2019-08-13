@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bid_on_a_box_supermarket/utils/colours.dart';
 
-class AddItem extends StatelessWidget {
+class AddItem extends StatefulWidget {
   final String title,
       description,
       itemInput,
@@ -31,7 +31,13 @@ class AddItem extends StatelessWidget {
       this.finishRoute})
       : super(key: key);
 
-  static const double padding = 20.0;
+  static const double padding = 8.0;
+
+  @override
+  _AddItemState createState() => _AddItemState();
+}
+
+class _AddItemState extends State<AddItem> {
   TextEditingController _itemController = TextEditingController();
 
   @override
@@ -39,77 +45,94 @@ class AddItem extends StatelessWidget {
     // TODO: implement build
     return Dialog(
       shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(padding)),
-      child: Stack(
-        children: <Widget>[
-          Container(
-            padding: EdgeInsets.all(padding),
-            decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(padding),
-                boxShadow: [
-                  BoxShadow(
-                    blurRadius: 10.0,
-                    offset: const Offset(0.0, 10.0),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(AddItem.padding)),
+      child: SingleChildScrollView(
+        child: Stack(
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.all(AddItem.padding),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(AddItem.padding),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 20.0,
+                      offset: const Offset(0.0, 20.0),
+                    ),
+                  ]),
+              child: Column(
+                children: <Widget>[
+                  SizedBox(height: 24.0),
+                  Text(
+                    widget.title,
+                    style: Theme.of(context).textTheme.title,
+                    textAlign: TextAlign.center,
                   ),
-                ]),
-            child: Column(
-              children: <Widget>[
-                SizedBox(height: 24.0),
-                Text(
-                  title,
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 24.0),
-                Text(
-                  description,
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 24.0),
-                TextField(
-                  keyboardType: TextInputType.number,
-                  controller: _itemController,
-                  decoration: InputDecoration(
-                      labelText: itemInput,
-                      hintText: "Enter product",
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0))),
-                ),
-                SizedBox(height: 24.0),
-                Row(
-                  children: <Widget>[
-                    RaisedButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0)),
-                        child: Text(cancelButtonText),
-                        onPressed: null),
-                    RaisedButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0)),
-                        child: Text(addButtonText),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          Navigator.of(context).pushReplacementNamed(addRoute);
-                        }),
-                    RaisedButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0)),
-                        child: Text(finishButtonText),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          Navigator.of(context)
-                              .pushReplacementNamed(finishRoute);
-                        }),
-                  ],
-                ),
-                SizedBox(height: 24.0),
-              ],
-            ),
-          )
-        ],
+                  SizedBox(height: 24.0),
+                  Text(
+                    widget.description,
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 24.0),
+                  TextField(
+                    keyboardType: TextInputType.text,
+                    controller: _itemController,
+                    decoration: InputDecoration(
+                        labelText: "Enter product",
+                        hintText: "Enter product",
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0))),
+                  ),
+                  SizedBox(height: 12.0),
+
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: RaisedButton(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0)),
+                            child: Text("Clear"),
+                            onPressed:
+                        _clearEntry),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: RaisedButton(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0)),
+                            child: Text("Add item"),
+                            onPressed: () {
+                              _clearEntry();
+                            }),
+                      ),
+                      RaisedButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0)),
+                          child: Text("Finish"),
+                          onPressed: () {
+                            _clearEntry();
+                            Navigator.of(context).pop();
+                            Navigator.of(context)
+                                .pushReplacementNamed(widget.finishRoute);
+                          }),
+
+                  SizedBox(height: 12.0),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
+String _addToList(){
+
 }
+  String _clearEntry (){
+setState(() {
+  _itemController.text="";
+});
+  }
+}
+
+
