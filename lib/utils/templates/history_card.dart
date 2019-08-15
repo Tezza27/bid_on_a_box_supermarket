@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:bid_on_a_box_supermarket/utils/colours.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-Widget buildHistoryCard(BuildContext context, int index) {
-  final box = null; //boxList[index];
+Widget buildHistoryCard(BuildContext context, DocumentSnapshot document) {
+  //final AsyncSnapshot<dynamic> snapshot = ; //boxList[index];
   return Card(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-    elevation: 4.0,
+    elevation: 8.0,
     borderOnForeground: true,
-
     child: Padding(
       padding: const EdgeInsets.only(right: 8.0),
       child: Row(
@@ -18,9 +18,13 @@ Widget buildHistoryCard(BuildContext context, int index) {
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: Container(
+              decoration: BoxDecoration(
+                color: accent_01Color,
+                borderRadius: BorderRadius.circular(10.0),
+              ),
               height: 100,
               width: 100,
-              color: accent_01Color,
+
             ),
           ),
 
@@ -29,25 +33,21 @@ Widget buildHistoryCard(BuildContext context, int index) {
           Expanded(
             child: Column(
               children: <Widget>[
+                //mainAxisSize: MainAxisSize.min,
+                //crossAxisAlignment: CrossAxisAlignment.start,
 
-                  Row(
-                    //mainAxisSize: MainAxisSize.min,
-                    //crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        box.boxType,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Spacer(),
-                      Text(
-                        box.boxID,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
+                Text(
+                  document["boxID"],
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+
+                Text(
+                  document["boxType"],
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
 
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
@@ -77,11 +77,11 @@ Widget buildHistoryCard(BuildContext context, int index) {
                           // mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: <Widget>[
                             Text(
-                              box.endDate,
+                              document["endDate"],
                               textAlign: TextAlign.right,
                             ),
                             Text(
-                              box.endTime,
+                              document["endTime"],
                               textAlign: TextAlign.right,
                             ),
                           ],
@@ -110,13 +110,13 @@ Widget buildHistoryCard(BuildContext context, int index) {
                         //mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
                           Text(
-                            "£${box.rRP.toStringAsFixed(2)}",
+                            "£${document["RRP"].toString()}",
                             textAlign: TextAlign.right,
                           ),
-                          Text(
-                            box.numberOfBids.toString(),
-                            textAlign: TextAlign.right,
-                          ),
+                          Text("0"
+                              //box.numberOfBids.toString(),
+                              //textAlign: TextAlign.right,
+                              ),
                         ],
                       ),
                     ],
@@ -125,15 +125,16 @@ Widget buildHistoryCard(BuildContext context, int index) {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    Text(
-                      box.winnerName,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    Text("Winner's Name"
+
+//                      box.winnerName,
+//                      style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                     Spacer(),
-                    Text(
-                      "£${box.highBid.toStringAsFixed(2)}",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    Text("00.00"
+//                      "£${box.highBid.toStringAsFixed(2)}",
+//                      style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                   ],
                 ),
               ],

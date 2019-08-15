@@ -3,7 +3,7 @@ import 'package:bid_on_a_box_supermarket/utils/screens/history_screen.dart';
 import 'package:bid_on_a_box_supermarket/utils/colours.dart';
 import 'package:intl/intl.dart';
 import 'package:bid_on_a_box_supermarket/utils/models/box_class.dart';
-import 'package:bid_on_a_box_supermarket/utils/templates/add_item.dart';
+import 'package:bid_on_a_box_supermarket/utils/models/item_class.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 
@@ -49,6 +49,9 @@ class _NewLotState extends State<NewLotScreen> {
   ];
   var _currentBoxTypeSelected = "";
   var _currentCharityNameSelected = "";
+
+  List<String> listStringItems = [];
+
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _weightController = TextEditingController();
   TextEditingController _priceController = TextEditingController();
@@ -57,6 +60,7 @@ class _NewLotState extends State<NewLotScreen> {
   TextEditingController _closingTimeController = TextEditingController();
   TextEditingController _collectionDateController = TextEditingController();
   TextEditingController _collectionTimeController = TextEditingController();
+  TextEditingController _itemController = TextEditingController();
 
   //These account variables are being set here for testing purposes.
   //When the app is complete, they will be established as part of
@@ -109,19 +113,32 @@ class _NewLotState extends State<NewLotScreen> {
                         ),
                       ),
                     ),
-                    DropdownButton<String>(
-                      //Box type selector
-                      isExpanded: true,
-                      items: _boxContentsTypes.map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      value: _currentBoxTypeSelected,
-                      onChanged: (String newBoxTypeSelected) {
-                        _onDropdownBoxTypeSelected(newBoxTypeSelected);
-                      },
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                                color: Theme.of(context).buttonColor),
+                            borderRadius: BorderRadius.circular(5.0)),
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 4.0, left: 4.0),
+                          child: DropdownButton<String>(
+                            //Box type selector
+                            isExpanded: true,
+                            underline: null,
+                            items: _boxContentsTypes.map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            value: _currentBoxTypeSelected,
+                            onChanged: (String newBoxTypeSelected) {
+                              _onDropdownBoxTypeSelected(newBoxTypeSelected);
+                            },
+                          ),
+                        ),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
@@ -132,10 +149,13 @@ class _NewLotState extends State<NewLotScreen> {
                         maxLines: null,
                         controller: _descriptionController,
                         decoration: InputDecoration(
-                            labelText: "Lot Description",
-                            hintText: "Provide notes/description for the lot",
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5.0))),
+                          labelText: "Lot Description",
+                          hintText: "Provide notes/description for the lot",
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).buttonColor)),
+                        ),
                       ),
                     ),
                     Padding(
@@ -152,11 +172,15 @@ class _NewLotState extends State<NewLotScreen> {
                                     keyboardType: TextInputType.number,
                                     controller: _weightController,
                                     decoration: InputDecoration(
-                                        labelText: "Box Weight in KG",
-                                        hintText: "Weight in KG",
-                                        border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(5.0))),
+                                      labelText: "Box Weight in KG",
+                                      hintText: "Weight in KG",
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5.0),
+                                          borderSide: BorderSide(
+                                              color: Theme.of(context)
+                                                  .buttonColor)),
+                                    ),
                                   ),
                                 )),
                             Flexible(
@@ -168,11 +192,15 @@ class _NewLotState extends State<NewLotScreen> {
                                     keyboardType: TextInputType.number,
                                     controller: _priceController,
                                     decoration: InputDecoration(
-                                        labelText: "Box RRP in £",
-                                        hintText: "Retail price total",
-                                        border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(5.0))),
+                                      labelText: "Box RRP in £",
+                                      hintText: "Retail price total",
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5.0),
+                                          borderSide: BorderSide(
+                                              color: Theme.of(context)
+                                                  .buttonColor)),
+                                    ),
                                   ),
                                 ))
                           ]),
@@ -189,10 +217,13 @@ class _NewLotState extends State<NewLotScreen> {
                                 keyboardType: TextInputType.datetime,
                                 controller: _closingDateController,
                                 decoration: InputDecoration(
-                                    labelText: "Closing Date",
-                                    border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(5.0))),
+                                  labelText: "Closing Date",
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5.0),
+                                      borderSide: BorderSide(
+                                          color:
+                                              Theme.of(context).buttonColor)),
+                                ),
                               ),
                             )),
                         Flexible(
@@ -220,10 +251,13 @@ class _NewLotState extends State<NewLotScreen> {
                                 keyboardType: TextInputType.number,
                                 controller: _closingTimeController,
                                 decoration: InputDecoration(
-                                    labelText: "Closing Time",
-                                    border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(5.0))),
+                                  labelText: "Closing Time",
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5.0),
+                                      borderSide: BorderSide(
+                                          color:
+                                              Theme.of(context).buttonColor)),
+                                ),
                               ),
                             )),
                         Flexible(
@@ -256,10 +290,13 @@ class _NewLotState extends State<NewLotScreen> {
                                 keyboardType: TextInputType.datetime,
                                 controller: _collectionDateController,
                                 decoration: InputDecoration(
-                                    labelText: "Collection Date",
-                                    border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(5.0))),
+                                  labelText: "Collection Date",
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5.0),
+                                      borderSide: BorderSide(
+                                          color:
+                                              Theme.of(context).buttonColor)),
+                                ),
                               ),
                             )),
                         Flexible(
@@ -287,10 +324,13 @@ class _NewLotState extends State<NewLotScreen> {
                                 keyboardType: TextInputType.number,
                                 controller: _collectionTimeController,
                                 decoration: InputDecoration(
-                                    labelText: "Collection Time",
-                                    border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(5.0))),
+                                  labelText: "Collection Time",
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5.0),
+                                      borderSide: BorderSide(
+                                          color:
+                                              Theme.of(context).buttonColor)),
+                                ),
                               ),
                             )),
                         Flexible(
@@ -318,22 +358,29 @@ class _NewLotState extends State<NewLotScreen> {
                           children: <Widget>[
                             Flexible(
                                 flex: 6,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: DropdownButton<String>(
-                                    //Charity selector
-                                    isExpanded: true,
-                                    items: _charityNames.map((String value) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,
-                                        child: Text(value),
-                                      );
-                                    }).toList(),
-                                    value: _currentCharityNameSelected,
-                                    onChanged: (String newCharitySelected) {
-                                      _onDropdownCharitySelected(
-                                          newCharitySelected);
-                                    },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Theme.of(context).buttonColor),
+                                      borderRadius: BorderRadius.circular(5.0)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        right: 4.0, left: 4.0),
+                                    child: DropdownButton<String>(
+                                      //Charity selector
+                                      isExpanded: true,
+                                      items: _charityNames.map((String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value),
+                                        );
+                                      }).toList(),
+                                      value: _currentCharityNameSelected,
+                                      onChanged: (String newCharitySelected) {
+                                        _onDropdownCharitySelected(
+                                            newCharitySelected);
+                                      },
+                                    ),
                                   ),
                                 )),
                             Flexible(
@@ -358,11 +405,15 @@ class _NewLotState extends State<NewLotScreen> {
                                   keyboardType: TextInputType.number,
                                   controller: _charityPCController,
                                   decoration: InputDecoration(
-                                      labelText: "%",
-                                      hintText: "%",
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5.0))),
+                                    labelText: "%",
+                                    hintText: "%",
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(5.0),
+                                        borderSide: BorderSide(
+                                            color:
+                                                Theme.of(context).buttonColor)),
+                                  ),
                                 )),
                           ]),
                     ),
@@ -376,21 +427,48 @@ class _NewLotState extends State<NewLotScreen> {
                                 child: Text("Add Items"),
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30.0)),
-                                onPressed: (){
-                                  showDialog(context: context,
-                                  builder: (BuildContext context)=> AddItem(
-                                    title: "ADD AN ITEM",
-                                    description: "Type the name of the product into the space. \n\n"
-                                        "Click the ADD ITEM button to add your item to the list.\n\n"
-                                    "Click the FINISH button to add your final product to the list.\n\n"
-                                        "Use the CLEAR button to delete the contents of the entry space without saving to the list. ",
-
-                                  ),
-                                  );
+                                onPressed: () {
+                                  _inputItemsDialog();
                                 }),
                           ),
                         ],
                       ),
+                    ),
+                    Container(
+                      child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: listStringItems.length, //boxList.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Dismissible(
+                              key: Key(listStringItems[index]),
+                              onDismissed: (direction) {
+                                String removedItem =
+                                    "${listStringItems[index]}";
+                                setState(() {
+                                  listStringItems.removeAt(index);
+                                });
+                                Scaffold.of(context).showSnackBar(SnackBar(
+                                  backgroundColor: Theme.of(context).hintColor,
+                                  duration: Duration(milliseconds: 750),
+                                  content: Text(
+                                    "You have removed ${removedItem.toUpperCase()} from the list",
+                                    style: Theme.of(context).textTheme.body2,
+                                  ),
+                                ));
+                              },
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0)),
+                                elevation: 4.0,
+                                borderOnForeground: true,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text("${listStringItems[index]}",
+                                      style: Theme.of(context).textTheme.body1),
+                                ),
+                              ),
+                            );
+                          }),
                     ),
                     SizedBox(height: 24.0),
                     Padding(
@@ -427,6 +505,19 @@ class _NewLotState extends State<NewLotScreen> {
                                     await db
                                         .collection("boxes")
                                         .add(newBox.toJson());
+
+                                    String _boxID = newBox.boxID;
+                                    int i = 0;
+                                    for (String item in listStringItems) {
+                                      ItemClass newItem = _prepareItem(
+                                          boxID: _boxID,
+                                          itemName: item,
+                                          index: i);
+                                      await db
+                                          .collection("items")
+                                          .add(newItem.toJson());
+                                      i++;
+                                    }
                                     setState(() {
                                       _reset();
                                     });
@@ -458,17 +549,20 @@ class _NewLotState extends State<NewLotScreen> {
   }
 
   void _reset() {
-    _descriptionController.text = "";
-    _currentBoxTypeSelected = _boxContentsTypes[0];
-    _weightController.text = "";
-    _priceController.text = "";
-    _currentCharityNameSelected = _charityNames[0];
-    _charityPCController.text = "";
-    _closingDateController.text = DateFormat('dd/MM/yy').format(_currentDate);
-    _closingTimeController.text = _closingTime.toString();
-    _collectionDateController.text =
-        DateFormat('dd/MM/yy').format(_currentDate);
-    _collectionTimeController.text = _collectionTime.toString();
+    setState(() {
+      _descriptionController.text = "";
+      _currentBoxTypeSelected = _boxContentsTypes[0];
+      _weightController.text = "";
+      _priceController.text = "";
+      _currentCharityNameSelected = _charityNames[0];
+      _charityPCController.text = "";
+      _closingDateController.text = DateFormat('dd/MM/yy').format(_currentDate);
+      _closingTimeController.text = _closingTime.toString();
+      _collectionDateController.text =
+          DateFormat('dd/MM/yy').format(_currentDate);
+      _collectionTimeController.text = _collectionTime.toString();
+      listStringItems.clear();
+    });
   }
 
   BoxClass _prepareBox() {
@@ -476,6 +570,7 @@ class _NewLotState extends State<NewLotScreen> {
     String startDate = DateFormat('dd/MM/yy').format(now);
     String startTime = DateFormat('HH:mm').format(now);
     String thisYear = now.year.toString();
+    thisYear = thisYear.substring(2, 4);
     String thisMonth = now.month.toString().padLeft(2, '0');
     String thisDay = now.day.toString().padLeft(2, '0');
     String thisHour = now.hour.toString().padLeft(2, '0');
@@ -495,6 +590,12 @@ class _NewLotState extends State<NewLotScreen> {
         double.parse(_weightController.text),
         _currentCharityNameSelected,
         double.parse(_charityPCController.text));
+  }
+
+  ItemClass _prepareItem({String boxID, String itemName, int index}) {
+    index = index + 1;
+    String _itemID = "$boxID${index.toString().padLeft(2, "0")}";
+    return ItemClass(_itemID, "$boxID", "$itemName");
   }
 
   Future<DateTime> _selectDate(BuildContext context,
@@ -519,13 +620,14 @@ class _NewLotState extends State<NewLotScreen> {
   }
 
   Future<TimeOfDay> _selectTime(BuildContext context, {int whichTime}) async {
+    final TimeOfDay closingTime = TimeOfDay(
+        hour: int.parse(_closingTime.split(":")[0]),
+        minute: int.parse(_closingTime.split(":")[1]));
     final TimeOfDay timePicked = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay(
-          hour: int.parse(_closingTime.split(":")[0]),
-          minute: int.parse(_closingTime.split(":")[1])),
+      initialTime: closingTime,
     );
-    if (timePicked != null && timePicked != _closingTime)
+    if (timePicked != null && timePicked != closingTime)
       setState(() {
         if (whichTime == 1) {
           return _closingTimeController.text =
@@ -535,5 +637,107 @@ class _NewLotState extends State<NewLotScreen> {
               "${timePicked.hour}:${timePicked.minute}";
         }
       });
+  }
+
+  void _inputItemsDialog() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0)),
+            child: SingleChildScrollView(
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.circular(16.0),
+                        boxShadow: [
+                          BoxShadow(
+                            blurRadius: 20.0,
+                            offset: const Offset(0.0, 20.0),
+                          ),
+                        ]),
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(height: 8.0),
+                        Text(
+                          "ADD AN ITEM",
+                          style: Theme.of(context).textTheme.title,
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 24.0),
+                        TextField(
+                          keyboardType: TextInputType.text,
+                          textCapitalization: TextCapitalization.sentences,
+                          controller: _itemController,
+                          decoration: InputDecoration(
+                              labelText: "Enter product",
+                              hintText: "Enter product",
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(5.0))),
+                        ),
+                        SizedBox(height: 12.0),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: RaisedButton(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0)),
+                              child: Text("Clear"),
+                              onPressed: _clearEntry),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: RaisedButton(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0)),
+                              child: Text("Add item"),
+                              onPressed: () {
+                                _addItemToList();
+                              }),
+                        ),
+                        RaisedButton(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0)),
+                            child: Text("Finish"),
+                            onPressed: () {
+                              _addItemToList();
+                              Navigator.of(context).pop();
+                            }),
+                        SizedBox(height: 24.0),
+                        Text(
+                          "Type a description of the item into the input space.\n\n"
+                          "Click FINISH if you have no more products to add.\n\n"
+                          "Click ADD ITEM if you have more items to add.\n\n"
+                          "Click CLEAR at any time to clear the input space",
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 12.0),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  void _clearEntry() {
+    setState(() {
+      _itemController.text = "";
+    });
+  }
+
+  void _addItemToList() {
+    setState(() {
+      if (_itemController.text.length > 0) {
+        listStringItems.add(_itemController.text);
+        _clearEntry();
+      }
+    });
   }
 }

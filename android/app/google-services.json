@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "689575402275",
+    "firebase_url": "https://bid-on-a-box.firebaseio.com",
+    "project_id": "bid-on-a-box",
+    "storage_bucket": "bid-on-a-box.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:689575402275:android:0d20b233230d9f46",
+        "android_client_info": {
+          "package_name": "com.example.bid_on_a_box_supermarket"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "689575402275-2pkv4c54b940fmt9ts23ffm68u0fo754.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGkBlHpyx3tKIOTwUPyYVrrXwth0UOBnU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "689575402275-2pkv4c54b940fmt9ts23ffm68u0fo754.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
