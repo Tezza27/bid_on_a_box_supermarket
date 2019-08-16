@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:bid_on_a_box_supermarket/utils/colours.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 Widget buildHistoryCard(BuildContext context, DocumentSnapshot document) {
-  //final AsyncSnapshot<dynamic> snapshot = ; //boxList[index];
+  DateTime closeDateFromFirestore = DateTime.fromMillisecondsSinceEpoch(document["endDateTime"].millisecondsSinceEpoch);
+  String closeDateFormat =DateFormat("dd/MM/yy").format(closeDateFromFirestore);
+  String closeTimeFormat =DateFormat("HH:mm").format(closeDateFromFirestore);
+
+
+
   return Card(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+    color: _getCardColor(context: context, now: DateTime.now(), closeDate: closeDateFromFirestore),
     elevation: 8.0,
     borderOnForeground: true,
     child: Padding(
@@ -76,12 +83,10 @@ Widget buildHistoryCard(BuildContext context, DocumentSnapshot document) {
                           //crossAxisAlignment: CrossAxisAlignment.end,
                           // mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: <Widget>[
-                            Text(
-                              document["endDate"],
+                            Text(closeDateFormat,
                               textAlign: TextAlign.right,
                             ),
-                            Text(
-                              document["endTime"],
+                            Text(closeTimeFormat,
                               textAlign: TextAlign.right,
                             ),
                           ],
@@ -144,4 +149,17 @@ Widget buildHistoryCard(BuildContext context, DocumentSnapshot document) {
       ),
     ),
   );
+
+}
+Color _getCardColor({BuildContext context, DateTime now, DateTime closeDate}){
+  if (now.isBefore(closeDate)) {
+    return Theme
+        .of(context)
+        .hintColor;
+  } else{
+    return Theme
+        .of(context)
+        .scaffoldBackgroundColor;
+
+  }
 }

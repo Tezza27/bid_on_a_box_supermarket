@@ -567,24 +567,33 @@ class _NewLotState extends State<NewLotScreen> {
 
   BoxClass _prepareBox() {
     DateTime now = DateTime.now();
-    String startDate = DateFormat('dd/MM/yy').format(now);
-    String startTime = DateFormat('HH:mm').format(now);
+    Timestamp nowTS = Timestamp.fromDate(now);
     String thisYear = now.year.toString();
-    thisYear = thisYear.substring(2, 4);
+    String thisYearShort = thisYear.substring(2, 4);
     String thisMonth = now.month.toString().padLeft(2, '0');
     String thisDay = now.day.toString().padLeft(2, '0');
     String thisHour = now.hour.toString().padLeft(2, '0');
     String thisMinute = now.minute.toString().padLeft(2, '0');
     String thisSecond = now.second.toString().padLeft(2, '0');
+    String closeYearFromController = _closingDateController.text;
+    String closeYear = "20${closeYearFromController.substring(6, 8).toString()}";
+    String closeMonth = _closingDateController.text.substring(3, 5).toString();
+    String closeDay = _closingDateController.text.substring(0, 2).toString();
+    String closeHourFromController = _closingTimeController.text;
+    String closeHour = _closingTimeController.text.substring(0, 2).toString();
+    String closeMinute = _closingTimeController.text.substring(3, 5).toString();
+    String closeSecond = "00";
+    String closeDateTimeString = "$closeYear-$closeMonth-$closeDay $closeHour:$closeMinute:$closeSecond";
+    DateTime closeDateTime = DateTime.parse(closeDateTimeString);
+
+        Timestamp closeTS = Timestamp.fromDate(closeDateTime);
     String _boxID =
-        "$companyID$storeID$thisYear$thisMonth$thisDay$thisHour$thisMinute$thisSecond";
+        "$companyID$storeID$thisYearShort$thisMonth$thisDay$thisHour$thisMinute$thisSecond";
     return BoxClass(
         _boxID,
         _currentBoxTypeSelected,
-        startDate,
-        startTime,
-        _closingDateController.text,
-        _closingTimeController.text,
+        nowTS,
+        closeTS,
         double.parse(_priceController.text),
         _descriptionController.text,
         double.parse(_weightController.text),

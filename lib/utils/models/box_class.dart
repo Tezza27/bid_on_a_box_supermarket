@@ -1,26 +1,24 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class BoxClass{
   final String boxID;
   final String boxType;
-  final String startDate;
-  final String startTime;
-  final String endDate;
-  final String endTime;
+  final Timestamp startDateTime;
+  final Timestamp endDateTime;
   final double rRP;
   final String boxDescription;
   final double boxWeight;
   final String boxCharity;
   final double boxCharityPercent;
 
-  BoxClass(this.boxID, this.boxType, this.startDate, this.startTime, this.endDate, this.endTime, this.rRP, this.boxDescription, this.boxWeight, this.boxCharity, this.boxCharityPercent);
+  BoxClass(this.boxID, this.boxType, this.startDateTime, this.endDateTime, this.rRP, this.boxDescription, this.boxWeight, this.boxCharity, this.boxCharityPercent);
 
 Map<String, dynamic> toJson()=>{
 
     "boxID": boxID,
     "boxType": boxType,
-    "startDate": startDate,
-    "startTime": startTime,
-    "endDate": endDate,
-    "endTime": endTime,
+    "startDateTime": startDateTime,
+    "endDateTime": endDateTime,
     "RRP": rRP,
     "boxDescription": boxDescription,
     "boxWeight": boxWeight,
