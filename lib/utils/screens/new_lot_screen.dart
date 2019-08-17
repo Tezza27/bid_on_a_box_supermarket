@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:bid_on_a_box_supermarket/utils/screens/history_screen.dart';
-import 'package:bid_on_a_box_supermarket/utils/colours.dart';
 import 'package:intl/intl.dart';
 import 'package:bid_on_a_box_supermarket/utils/models/box_class.dart';
 import 'package:bid_on_a_box_supermarket/utils/models/item_class.dart';
@@ -106,7 +105,10 @@ class _NewLotState extends State<NewLotScreen> {
                     Container(
                       //Image holder with camera icon
                       height: 200.0,
-                      color: accent_01Color,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
                       child: Center(
                         child: Container(
                           child: Icon(Icons.camera_enhance, size: 30),
@@ -576,17 +578,18 @@ class _NewLotState extends State<NewLotScreen> {
     String thisMinute = now.minute.toString().padLeft(2, '0');
     String thisSecond = now.second.toString().padLeft(2, '0');
     String closeYearFromController = _closingDateController.text;
-    String closeYear = "20${closeYearFromController.substring(6, 8).toString()}";
+    String closeYear =
+        "20${closeYearFromController.substring(6, 8).toString()}";
     String closeMonth = _closingDateController.text.substring(3, 5).toString();
     String closeDay = _closingDateController.text.substring(0, 2).toString();
-    String closeHourFromController = _closingTimeController.text;
     String closeHour = _closingTimeController.text.substring(0, 2).toString();
     String closeMinute = _closingTimeController.text.substring(3, 5).toString();
     String closeSecond = "00";
-    String closeDateTimeString = "$closeYear-$closeMonth-$closeDay $closeHour:$closeMinute:$closeSecond";
+    String closeDateTimeString =
+        "$closeYear-$closeMonth-$closeDay $closeHour:$closeMinute:$closeSecond";
     DateTime closeDateTime = DateTime.parse(closeDateTimeString);
 
-        Timestamp closeTS = Timestamp.fromDate(closeDateTime);
+    Timestamp closeTS = Timestamp.fromDate(closeDateTime);
     String _boxID =
         "$companyID$storeID$thisYearShort$thisMonth$thisDay$thisHour$thisMinute$thisSecond";
     return BoxClass(
