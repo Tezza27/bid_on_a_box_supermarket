@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 // https://www.dropbox.com/s/vav9ns3jz5hzbpb/Visual%20style%20guide%20-%20Bid%20on%20a%20Box.pdf?dl=0)
 //in order to ensure consistency across development
 
-final brand_01Color = const Color(0xFF98F09C);
+final brand_01Color = const Color(0xFF46e087);
 final accent_01Color = const Color(0xFF9DD39F);
 final accent_02Color = const Color(0xFF8BBEB2);
 final accent_03Color = const Color(0xFFF2BD74);

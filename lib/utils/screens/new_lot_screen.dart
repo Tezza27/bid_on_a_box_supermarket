@@ -1,10 +1,13 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:bid_on_a_box_supermarket/utils/screens/history_screen.dart';
+import 'package:bid_on_a_box_supermarket/main.dart';
 import 'package:intl/intl.dart';
 import 'package:bid_on_a_box_supermarket/utils/models/box_class.dart';
 import 'package:bid_on_a_box_supermarket/utils/models/item_class.dart';
+import 'package:bid_on_a_box_supermarket/utils/variables/variables.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
+import 'package:image_picker/image_picker.dart';
 
 class NewLotScreen extends StatefulWidget {
   @override
@@ -31,6 +34,7 @@ class _NewLotState extends State<NewLotScreen> {
     "Fruit & Veg",
     "Mixed",
     "Mystery",
+    "Non-Food",
     "Veg"
   ];
   var _charityNames = [
@@ -61,35 +65,32 @@ class _NewLotState extends State<NewLotScreen> {
   TextEditingController _collectionTimeController = TextEditingController();
   TextEditingController _itemController = TextEditingController();
 
-  //These account variables are being set here for testing purposes.
-  //When the app is complete, they will be established as part of
-  //the sign up process
-  final String storeID = "0389";
-  final String regionID = "South-West";
-  final String storeName = "Bodmin Superstore";
-  final String storeAddress1 = "Launceston Road";
-  final String storeAddress2 = "";
-  final String storeTown = "Bodmin";
-  final String storeCounty = "Cornwall";
-  final String storePostcode = "PL31 2AR";
-  final String storeTelephone = "01208 261800";
-  final String storeMail = "terryrees@hotmail.com";
-  final String companyID = "ASD";
-  final String companyName = " Asda";
-  final String companyHQAddress1 = "Asda House Southbank";
-  final String companyHQAddress2 = "Great Wilson St";
-  final String companyHQAddress3 = "";
-  final String companyHQTown = "Leeds";
-  final String companyHQCounty = "West Yorkshire";
-  final String companyHQPostcode = "LS11 5AD";
-  final String companyContactName = "Dave Smith";
-  final String companyContactTelephone = "01132 555555";
-  final String companyVerifyMail = "terryrees@hotmail.com";
-
   @override
   void initState() {
     super.initState();
     _reset();
+  }
+
+  File _storedImage;
+
+  Future<void> _getPicture() async {
+    final imageFile = await ImagePicker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 600,
+    );
+    setState(() {
+      _storedImage = imageFile;
+    });
+  }
+
+  Future<void> _takePicture() async {
+    final imageFile = await ImagePicker.pickImage(
+      source: ImageSource.camera,
+      maxWidth: 600,
+    );
+    setState(() {
+      _storedImage = imageFile;
+    });
   }
 
   @override
@@ -103,17 +104,56 @@ class _NewLotState extends State<NewLotScreen> {
                   padding: const EdgeInsets.all(32.0),
                   child: Column(children: <Widget>[
                     Container(
-                      //Image holder with camera icon
-                      height: 200.0,
+                      height: 200,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).primaryColor,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10.0),
+                          )),
+                      child: _storedImage != null
+                          ? ClipRRect(
                         borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Center(
-                        child: Container(
-                          child: Icon(Icons.camera_enhance, size: 30),
+                          child: Image.file(
+                            _storedImage,
+                            fit: BoxFit.cover,
+                            width: double.infinity,)
+
+                            )
+                          : Center(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 85.0, bottom: 85.0),
+                                child: Container(
+                                  child: Icon(Icons.camera_enhance, size: 30),
+                                ),
+                              ),
+                            ),
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: RaisedButton.icon(
+                                label: Text(""),
+                                icon: Icon(Icons.attach_file, size: 30),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30.0)),
+                                onPressed:()=> _getPicture),
+                          ),
                         ),
-                      ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: RaisedButton.icon(
+                                label: Text(""),
+                                icon: Icon(Icons.camera_enhance, size: 30),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30.0)),
+                                onPressed: _takePicture),
+                          ),
+                        ),
+                      ],
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
@@ -527,7 +567,7 @@ class _NewLotState extends State<NewLotScreen> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                HistoryScreen()));
+                                                BottomNavBar()));
                                   }),
                             ),
                           ),
@@ -591,9 +631,10 @@ class _NewLotState extends State<NewLotScreen> {
 
     Timestamp closeTS = Timestamp.fromDate(closeDateTime);
     String _boxID =
-        "$companyID$storeID$thisYearShort$thisMonth$thisDay$thisHour$thisMinute$thisSecond";
+        "$storeID$thisYearShort$thisMonth$thisDay$thisHour$thisMinute$thisSecond";
     return BoxClass(
         _boxID,
+        storeID,
         _currentBoxTypeSelected,
         nowTS,
         closeTS,
