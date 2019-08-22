@@ -1,13 +1,11 @@
-import 'package:flutter/material.dart';
+import 'package:bid_on_a_box_supermarket/utils/screens/analysis_screen.dart';
+import 'package:bid_on_a_box_supermarket/utils/screens/contact_screen.dart';
 import 'package:bid_on_a_box_supermarket/utils/screens/history_screen.dart';
 import 'package:bid_on_a_box_supermarket/utils/screens/new_lot_screen.dart';
-import 'package:bid_on_a_box_supermarket/utils/screens/analysis_screen.dart';
-import './utils/colours.dart';
-import 'package:bid_on_a_box_supermarket/utils/screens/contact_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:camera/camera.dart';
+import 'package:flutter/material.dart';
 
-List<CameraDescription> cameras;
+import './utils/colours.dart';
 
 void main(){
 

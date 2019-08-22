@@ -1,13 +1,15 @@
+import 'dart:async';
 import 'dart:io';
-import 'package:flutter/material.dart';
+
 import 'package:bid_on_a_box_supermarket/main.dart';
-import 'package:intl/intl.dart';
 import 'package:bid_on_a_box_supermarket/utils/models/box_class.dart';
 import 'package:bid_on_a_box_supermarket/utils/models/item_class.dart';
 import 'package:bid_on_a_box_supermarket/utils/variables/variables.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:async';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class NewLotScreen extends StatefulWidget {
   @override
@@ -23,20 +25,7 @@ class _NewLotState extends State<NewLotScreen> {
   DateTime closingDate;
   String _closingTime = "21:00";
   String _collectionTime = "23:00";
-  var _boxContentsTypes = [
-    "",
-    "Ambient Grocery",
-    "Butchery",
-    "Chilled",
-    "Dairy",
-    "Deli",
-    "Fruit",
-    "Fruit & Veg",
-    "Mixed",
-    "Mystery",
-    "Non-Food",
-    "Veg"
-  ];
+  var selectedType;
   var _charityNames = [
     "",
     "Charity 1",
@@ -72,26 +61,7 @@ class _NewLotState extends State<NewLotScreen> {
   }
 
   File _storedImage;
-
-  Future<void> _getPicture() async {
-    final imageFile = await ImagePicker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 600,
-    );
-    setState(() {
-      _storedImage = imageFile;
-    });
-  }
-
-  Future<void> _takePicture() async {
-    final imageFile = await ImagePicker.pickImage(
-      source: ImageSource.camera,
-      maxWidth: 600,
-    );
-    setState(() {
-      _storedImage = imageFile;
-    });
-  }
+  var imageURL;
 
   @override
   Widget build(BuildContext context) {
@@ -112,22 +82,21 @@ class _NewLotState extends State<NewLotScreen> {
                           )),
                       child: _storedImage != null
                           ? ClipRRect(
-                        borderRadius: BorderRadius.circular(10.0),
+                          borderRadius: BorderRadius.circular(10.0),
                           child: Image.file(
                             _storedImage,
                             fit: BoxFit.cover,
-                            width: double.infinity,)
-
-                            )
+                            width: double.infinity,
+                          ))
                           : Center(
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 85.0, bottom: 85.0),
-                                child: Container(
-                                  child: Icon(Icons.camera_enhance, size: 30),
-                                ),
-                              ),
-                            ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              top: 85.0, bottom: 85.0),
+                          child: Container(
+                            child: Icon(Icons.camera_enhance, size: 30),
+                          ),
+                        ),
+                      ),
                     ),
                     Row(
                       children: <Widget>[
@@ -139,7 +108,7 @@ class _NewLotState extends State<NewLotScreen> {
                                 icon: Icon(Icons.attach_file, size: 30),
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30.0)),
-                                onPressed:()=> _getPicture),
+                                onPressed: _getPicture),
                           ),
                         ),
                         Expanded(
@@ -155,32 +124,62 @@ class _NewLotState extends State<NewLotScreen> {
                         ),
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Theme.of(context).buttonColor),
-                            borderRadius: BorderRadius.circular(5.0)),
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 4.0, left: 4.0),
-                          child: DropdownButton<String>(
-                            //Box type selector
-                            isExpanded: true,
-                            underline: null,
-                            items: _boxContentsTypes.map((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
+                    Container(
+                      decoration: BoxDecoration(
+                          border:
+                          Border.all(color: Theme
+                              .of(context)
+                              .buttonColor),
+                          borderRadius: BorderRadius.circular(5.0)),
+                      child: StreamBuilder<QuerySnapshot>(
+                          stream: Firestore.instance
+                              .collection("boxTypes").orderBy(
+                              "type", descending: false)
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              Center(
+                                child: Column(
+                                  children: <Widget>[
+                                    Text("Loading data..."),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 32.0),
+                                      child: LinearProgressIndicator(),
+                                    ),
+                                  ],
+                                ),
                               );
-                            }).toList(),
-                            value: _currentBoxTypeSelected,
-                            onChanged: (String newBoxTypeSelected) {
-                              _onDropdownBoxTypeSelected(newBoxTypeSelected);
-                            },
-                          ),
-                        ),
-                      ),
+                            } else {
+                              List<DropdownMenuItem> typeItems = [];
+                              for (int i = 0;
+                              i < snapshot.data.documents.length;
+                              i++) {
+                                DocumentSnapshot typeSnap =
+                                snapshot.data.documents[i];
+                                typeItems.add(DropdownMenuItem(
+                                  child: Text(
+                                      "${typeSnap.data["type"].toString()}"),
+                                  value: "${typeSnap.data["type"].toString()}",
+                                ));
+                              }
+                              return Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: DropdownButton(
+                                  // ignore: missing_return
+                                  items: typeItems,
+                                  isExpanded: true,
+                                  underline: null,
+                                  hint: Text("Select a box type"),
+                                  onChanged: (typeValue) {
+                                    setState(() {
+                                      selectedType = typeValue;
+                                    });
+                                  },
+                                  value: selectedType,
+                                ),
+                              );
+                            }
+                          }),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
@@ -218,7 +217,7 @@ class _NewLotState extends State<NewLotScreen> {
                                       hintText: "Weight in KG",
                                       enabledBorder: OutlineInputBorder(
                                           borderRadius:
-                                              BorderRadius.circular(5.0),
+                                          BorderRadius.circular(5.0),
                                           borderSide: BorderSide(
                                               color: Theme.of(context)
                                                   .buttonColor)),
@@ -238,7 +237,7 @@ class _NewLotState extends State<NewLotScreen> {
                                       hintText: "Retail price total",
                                       enabledBorder: OutlineInputBorder(
                                           borderRadius:
-                                              BorderRadius.circular(5.0),
+                                          BorderRadius.circular(5.0),
                                           borderSide: BorderSide(
                                               color: Theme.of(context)
                                                   .buttonColor)),
@@ -264,7 +263,9 @@ class _NewLotState extends State<NewLotScreen> {
                                       borderRadius: BorderRadius.circular(5.0),
                                       borderSide: BorderSide(
                                           color:
-                                              Theme.of(context).buttonColor)),
+                                          Theme
+                                              .of(context)
+                                              .buttonColor)),
                                 ),
                               ),
                             )),
@@ -288,7 +289,7 @@ class _NewLotState extends State<NewLotScreen> {
                             flex: 4,
                             child: Padding(
                               padding:
-                                  const EdgeInsets.only(right: 8.0, left: 8.0),
+                              const EdgeInsets.only(right: 8.0, left: 8.0),
                               child: TextFormField(
                                 keyboardType: TextInputType.number,
                                 controller: _closingTimeController,
@@ -298,7 +299,9 @@ class _NewLotState extends State<NewLotScreen> {
                                       borderRadius: BorderRadius.circular(5.0),
                                       borderSide: BorderSide(
                                           color:
-                                              Theme.of(context).buttonColor)),
+                                          Theme
+                                              .of(context)
+                                              .buttonColor)),
                                 ),
                               ),
                             )),
@@ -337,7 +340,9 @@ class _NewLotState extends State<NewLotScreen> {
                                       borderRadius: BorderRadius.circular(5.0),
                                       borderSide: BorderSide(
                                           color:
-                                              Theme.of(context).buttonColor)),
+                                          Theme
+                                              .of(context)
+                                              .buttonColor)),
                                 ),
                               ),
                             )),
@@ -361,7 +366,7 @@ class _NewLotState extends State<NewLotScreen> {
                             flex: 4,
                             child: Padding(
                               padding:
-                                  const EdgeInsets.only(right: 8.0, left: 8.0),
+                              const EdgeInsets.only(right: 8.0, left: 8.0),
                               child: TextFormField(
                                 keyboardType: TextInputType.number,
                                 controller: _collectionTimeController,
@@ -371,7 +376,9 @@ class _NewLotState extends State<NewLotScreen> {
                                       borderRadius: BorderRadius.circular(5.0),
                                       borderSide: BorderSide(
                                           color:
-                                              Theme.of(context).buttonColor)),
+                                          Theme
+                                              .of(context)
+                                              .buttonColor)),
                                 ),
                               ),
                             )),
@@ -411,6 +418,8 @@ class _NewLotState extends State<NewLotScreen> {
                                     child: DropdownButton<String>(
                                       //Charity selector
                                       isExpanded: true,
+                                      hint:
+                                      Text("Select a charity if donating"),
                                       items: _charityNames.map((String value) {
                                         return DropdownMenuItem<String>(
                                           value: value,
@@ -451,10 +460,12 @@ class _NewLotState extends State<NewLotScreen> {
                                     hintText: "%",
                                     enabledBorder: OutlineInputBorder(
                                         borderRadius:
-                                            BorderRadius.circular(5.0),
+                                        BorderRadius.circular(5.0),
                                         borderSide: BorderSide(
                                             color:
-                                                Theme.of(context).buttonColor)),
+                                            Theme
+                                                .of(context)
+                                                .buttonColor)),
                                   ),
                                 )),
                           ]),
@@ -465,7 +476,7 @@ class _NewLotState extends State<NewLotScreen> {
                         children: <Widget>[
                           Expanded(
                             child: RaisedButton(
-                                //Sends the message
+                              //Sends the message
                                 child: Text("Add Items"),
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30.0)),
@@ -521,11 +532,11 @@ class _NewLotState extends State<NewLotScreen> {
                             child: Padding(
                               padding: const EdgeInsets.only(right: 8.0),
                               child: RaisedButton(
-                                  //Clears the contact text field
+                                //Clears the contact text field
                                   child: Text("Cancel"),
                                   shape: RoundedRectangleBorder(
                                       borderRadius:
-                                          BorderRadius.circular(30.0)),
+                                      BorderRadius.circular(30.0)),
                                   onPressed: () {
                                     setState(() {
                                       _reset();
@@ -537,13 +548,13 @@ class _NewLotState extends State<NewLotScreen> {
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8.0),
                               child: RaisedButton(
-                                  //Sends the message
+                                //Sends the message
                                   child: Text("Upload"),
                                   shape: RoundedRectangleBorder(
                                       borderRadius:
-                                          BorderRadius.circular(30.0)),
+                                      BorderRadius.circular(30.0)),
                                   onPressed: () async {
-                                    BoxClass newBox = _prepareBox();
+                                    BoxClass newBox = await _prepareBox();
                                     await db
                                         .collection("boxes")
                                         .add(newBox.toJson());
@@ -578,12 +589,6 @@ class _NewLotState extends State<NewLotScreen> {
         ));
   }
 
-  void _onDropdownBoxTypeSelected(String newBoxTypeSelected) {
-    setState(() {
-      this._currentBoxTypeSelected = newBoxTypeSelected;
-    });
-  }
-
   void _onDropdownCharitySelected(String newCharitySelected) {
     setState(() {
       this._currentCharityNameSelected = newCharitySelected;
@@ -593,7 +598,6 @@ class _NewLotState extends State<NewLotScreen> {
   void _reset() {
     setState(() {
       _descriptionController.text = "";
-      _currentBoxTypeSelected = _boxContentsTypes[0];
       _weightController.text = "";
       _priceController.text = "";
       _currentCharityNameSelected = _charityNames[0];
@@ -607,7 +611,7 @@ class _NewLotState extends State<NewLotScreen> {
     });
   }
 
-  BoxClass _prepareBox() {
+  Future<BoxClass> _prepareBox() async {
     DateTime now = DateTime.now();
     Timestamp nowTS = Timestamp.fromDate(now);
     String thisYear = now.year.toString();
@@ -632,6 +636,13 @@ class _NewLotState extends State<NewLotScreen> {
     Timestamp closeTS = Timestamp.fromDate(closeDateTime);
     String _boxID =
         "$storeID$thisYearShort$thisMonth$thisDay$thisHour$thisMinute$thisSecond";
+    String filename = "$_boxID\.jpg";
+    StorageReference firebaseStorageRef =
+    FirebaseStorage.instance.ref().child(filename);
+    StorageUploadTask uploadTask = firebaseStorageRef.putFile(_storedImage);
+    StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
+    imageURL = Uri.parse(await firebaseStorageRef.getDownloadURL() as String)
+        .toString();
     return BoxClass(
         _boxID,
         storeID,
@@ -642,7 +653,8 @@ class _NewLotState extends State<NewLotScreen> {
         _descriptionController.text,
         double.parse(_weightController.text),
         _currentCharityNameSelected,
-        double.parse(_charityPCController.text));
+        double.parse(_charityPCController.text),
+        imageURL.toString());
   }
 
   ItemClass _prepareItem({String boxID, String itemName, int index}) {
@@ -684,10 +696,10 @@ class _NewLotState extends State<NewLotScreen> {
       setState(() {
         if (whichTime == 1) {
           return _closingTimeController.text =
-              "${timePicked.hour}:${timePicked.minute}";
+          "${timePicked.hour}:${timePicked.minute}";
         } else {
           return _collectionTimeController.text =
-              "${timePicked.hour}:${timePicked.minute}";
+          "${timePicked.hour}:${timePicked.minute}";
         }
       });
   }
@@ -763,9 +775,9 @@ class _NewLotState extends State<NewLotScreen> {
                         SizedBox(height: 24.0),
                         Text(
                           "Type a description of the item into the input space.\n\n"
-                          "Click FINISH if you have no more products to add.\n\n"
-                          "Click ADD ITEM if you have more items to add.\n\n"
-                          "Click CLEAR at any time to clear the input space",
+                              "Click FINISH if you have no more products to add.\n\n"
+                              "Click ADD ITEM if you have more items to add.\n\n"
+                              "Click CLEAR at any time to clear the input space",
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(height: 12.0),
@@ -777,6 +789,26 @@ class _NewLotState extends State<NewLotScreen> {
             ),
           );
         });
+  }
+
+  Future<void> _getPicture() async {
+    final imageFile = await ImagePicker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 600,
+    );
+    setState(() {
+      _storedImage = imageFile;
+    });
+  }
+
+  Future<void> _takePicture() async {
+    final imageFile = await ImagePicker.pickImage(
+      source: ImageSource.camera,
+      maxWidth: 600,
+    );
+    setState(() {
+      _storedImage = imageFile;
+    });
   }
 
   void _clearEntry() {

@@ -1,7 +1,7 @@
+import 'package:bid_on_a_box_supermarket/utils/services/item_bid_data.dart';
+import 'package:bid_on_a_box_supermarket/utils/services/item_detail_data.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:bid_on_a_box_supermarket/utils/services/item_detail_data.dart';
-import 'package:bid_on_a_box_supermarket/utils/services/item_bid_data.dart';
 
 class LotDetailScreen extends StatelessWidget {
   final document;
@@ -13,17 +13,17 @@ class LotDetailScreen extends StatelessWidget {
     DateTime startDateFromFirestore = DateTime.fromMillisecondsSinceEpoch(
         document["startDateTime"].millisecondsSinceEpoch);
     String startDateFormat =
-        DateFormat("dd/MM/yy").format(startDateFromFirestore);
+    DateFormat("dd/MM/yy").format(startDateFromFirestore);
     String startTimeFormat =
-        DateFormat("HH:mm:ss").format(startDateFromFirestore);
+    DateFormat("HH:mm:ss").format(startDateFromFirestore);
     DateTime closeDateFromFirestore = DateTime.fromMillisecondsSinceEpoch(
         document["endDateTime"].millisecondsSinceEpoch);
     String closeDateFormat =
-        DateFormat("dd/MM/yy").format(closeDateFromFirestore);
+    DateFormat("dd/MM/yy").format(closeDateFromFirestore);
     String closeTimeFormat =
-        DateFormat("HH:mm:ss").format(closeDateFromFirestore);
+    DateFormat("HH:mm:ss").format(closeDateFromFirestore);
     Duration duration =
-        closeDateFromFirestore.difference(startDateFromFirestore);
+    closeDateFromFirestore.difference(startDateFromFirestore);
     int durHours = duration.inHours;
     int durMinutes = duration.inMinutes - (durHours * 60);
     int durSeconds = duration.inSeconds - (durMinutes * 60);
@@ -35,12 +35,14 @@ class LotDetailScreen extends StatelessWidget {
           child: Padding(
               padding: const EdgeInsets.only(top: 16.0, left: 32, right: 32),
               child: Column(children: <Widget>[
-                Container(
-                  //Image holder with camera icon
-                  height: 200.0,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
-                    borderRadius: BorderRadius.circular(10.0),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child: Image.network(
+                    "${document["imageURL"]}",
+                    height: 200.0,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+
                   ),
                 ),
                 Padding(
@@ -85,11 +87,13 @@ class LotDetailScreen extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Column(
                             children: <Widget>[
-                              Text(
-                                "DURATION:",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
+                              Flexible(
+                                child: Text(
+                                  "DURATION:",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                               Text(
@@ -110,7 +114,9 @@ class LotDetailScreen extends StatelessWidget {
                                       height: 15,
                                       decoration: BoxDecoration(
                                           color:
-                                              Theme.of(context).primaryColor)),
+                                          Theme
+                                              .of(context)
+                                              .primaryColor)),
                                 ),
                               ]),
                             ],

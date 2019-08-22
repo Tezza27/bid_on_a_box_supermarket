@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:bid_on_a_box_supermarket/utils/templates/bid_history_card.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 Widget buildBidBody(BuildContext context, String itemBoxID, double boxRRP) {
-  String varBoxID = itemBoxID;
   return StreamBuilder<QuerySnapshot>(
     stream: Firestore.instance.collection('bids').where(
         "boxID", isEqualTo: itemBoxID)

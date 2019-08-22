@@ -11,6 +11,7 @@ class BoxClass {
   final double boxWeight;
   final String boxCharity;
   final double boxCharityPercent;
+  final String imageURL;
 
   BoxClass(
       this.boxID,
@@ -22,7 +23,8 @@ class BoxClass {
       this.boxDescription,
       this.boxWeight,
       this.boxCharity,
-      this.boxCharityPercent);
+      this.boxCharityPercent,
+      this.imageURL);
 
   Map<String, dynamic> toJson() => {
         "boxID": boxID,
@@ -34,6 +36,7 @@ class BoxClass {
         "boxDescription": boxDescription,
         "boxWeight": boxWeight,
         "boxCharity": boxCharity,
-        "boxCharityPercent": boxCharityPercent
+    "boxCharityPercent": boxCharityPercent,
+    "imageURL": imageURL,
       };
 }

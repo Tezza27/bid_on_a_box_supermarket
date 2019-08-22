@@ -1,18 +1,21 @@
-import 'package:flutter/material.dart';
-import 'package:bid_on_a_box_supermarket/utils/colours.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 Widget buildHistoryCard(BuildContext context, DocumentSnapshot document) {
-  DateTime closeDateFromFirestore = DateTime.fromMillisecondsSinceEpoch(document["endDateTime"].millisecondsSinceEpoch);
-  String closeDateFormat =DateFormat("dd/MM/yy").format(closeDateFromFirestore);
-  String closeTimeFormat =DateFormat("HH:mm").format(closeDateFromFirestore);
-
-
+  DateTime closeDateFromFirestore = DateTime.fromMillisecondsSinceEpoch(
+      document["endDateTime"].millisecondsSinceEpoch);
+  String closeDateFormat =
+  DateFormat("dd/MM/yy").format(closeDateFromFirestore);
+  String closeTimeFormat = DateFormat("HH:mm").format(closeDateFromFirestore);
 
   return Card(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-    color: _getCardColor(context: context, now: DateTime.now(), closeDate: closeDateFromFirestore),
+    color: _getCardColor(
+        context: context,
+        now: DateTime.now(),
+        closeDate: closeDateFromFirestore),
     elevation: 8.0,
     borderOnForeground: true,
     child: Padding(
@@ -24,14 +27,14 @@ Widget buildHistoryCard(BuildContext context, DocumentSnapshot document) {
 
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: accent_01Color,
-                borderRadius: BorderRadius.circular(10.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10.0),
+              child: Image.network(
+                "${document["imageURL"]}",
+                height: 100.0,
+                width: 100.0,
+                fit: BoxFit.cover,
               ),
-              height: 100,
-              width: 100,
-
             ),
           ),
 
@@ -83,10 +86,12 @@ Widget buildHistoryCard(BuildContext context, DocumentSnapshot document) {
                           //crossAxisAlignment: CrossAxisAlignment.end,
                           // mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: <Widget>[
-                            Text(closeDateFormat,
+                            Text(
+                              closeDateFormat,
                               textAlign: TextAlign.right,
                             ),
-                            Text(closeTimeFormat,
+                            Text(
+                              closeTimeFormat,
                               textAlign: TextAlign.right,
                             ),
                           ],
@@ -149,17 +154,16 @@ Widget buildHistoryCard(BuildContext context, DocumentSnapshot document) {
       ),
     ),
   );
-
 }
-Color _getCardColor({BuildContext context, DateTime now, DateTime closeDate}){
+
+Color _getCardColor({BuildContext context, DateTime now, DateTime closeDate}) {
   if (now.isBefore(closeDate)) {
     return Theme
         .of(context)
         .hintColor;
-  } else{
+  } else {
     return Theme
         .of(context)
         .scaffoldBackgroundColor;
-
   }
 }
