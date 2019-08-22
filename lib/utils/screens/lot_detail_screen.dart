@@ -24,9 +24,11 @@ class LotDetailScreen extends StatelessWidget {
     DateFormat("HH:mm:ss").format(closeDateFromFirestore);
     Duration duration =
     closeDateFromFirestore.difference(startDateFromFirestore);
-    int durHours = duration.inHours;
-    int durMinutes = duration.inMinutes - (durHours * 60);
-    int durSeconds = duration.inSeconds - (durMinutes * 60);
+    int durHours = duration.inHours.floor();
+    int durMinutes = duration.inMinutes - (durHours * 60).floor();
+    int durSeconds = int.parse(
+        ((duration.inSeconds - (durHours * 60 * 60) - (durMinutes * 60))
+            .floor()).toStringAsFixed(0));
     String itemBoxID = document["boxID"];
 
     return Scaffold(
@@ -42,7 +44,6 @@ class LotDetailScreen extends StatelessWidget {
                     height: 200.0,
                     fit: BoxFit.cover,
                     width: double.infinity,
-
                   ),
                 ),
                 Padding(
@@ -81,48 +82,54 @@ class LotDetailScreen extends StatelessWidget {
                           ],
                         ),
                       ),
+
+//
                       Flexible(
                         flex: 3,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Column(
+                        child: Column(
                             children: <Widget>[
-                              Flexible(
-                                child: Text(
+                              Text(
                                   "DURATION:",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                              ),
+
                               Text(
                                 "$durHours:$durMinutes:$durSeconds",
                                 textAlign: TextAlign.center,
                               ),
-                              Row(children: <Widget>[
-                                Flexible(
-                                  flex: 50,
-                                  child: Container(
-                                      height: 15,
-                                      decoration: BoxDecoration(
-                                          color: Theme.of(context).hintColor)),
-                                ),
-                                Flexible(
-                                  flex: 50,
-                                  child: Container(
-                                      height: 15,
-                                      decoration: BoxDecoration(
-                                          color:
-                                          Theme
-                                              .of(context)
-                                              .primaryColor)),
-                                ),
-                              ]),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0),
+                                child: Row(children: <Widget>[
+                                  Flexible(
+                                    flex: 50,
+                                    child: Container(
+                                        height: 15,
+                                        decoration: BoxDecoration(
+                                            color: Theme
+                                                .of(context)
+                                                .hintColor)),
+                                  ),
+
+                                  Flexible(
+                                    flex: 50,
+                                    child: Container(
+                                        height: 15,
+                                        decoration: BoxDecoration(
+                                            color: Theme
+                                                .of(context)
+                                                .primaryColor)),
+                                  ),
+                                ]),
+                              ),
                             ],
                           ),
-                        ),
                       ),
+
+
                       Flexible(
                         flex: 1,
                         child: Column(
@@ -238,14 +245,43 @@ class LotDetailScreen extends StatelessWidget {
                 Column(
                   children: <Widget>[
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Flexible(flex: 1, child: Text("Date", textAlign: TextAlign.left,)),
-                        Flexible(flex: 1, child: Text("Time", textAlign: TextAlign.left,)),
-                        Flexible(flex: 1, child: Text("£Bid", textAlign: TextAlign.left,)),
-                        Flexible(flex: 1, child: Text("RRP%", textAlign: TextAlign.left,)),
+                        Flexible(
+                          flex: 1,
+                          child: Text(
+                            "Date",
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                        Flexible(
+                          flex: 1,
+                          child: Text(
+                            "Time",
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                        Flexible(
+                          flex: 1,
+                          child: Text(
+                            "£Bid",
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+
+                        Flexible(
+                          flex: 1,
+                          child: Text(
+                            "RRP%",
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
                       ],
                     ),
-                    buildBidBody(context, itemBoxID, document["RRP"])
+                    buildBidBody(context, itemBoxID, document["RRP"]),
+                    SizedBox(
+                      height: 16.0,
+                    ),
                   ],
                 ),
               ])),

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bid_on_a_box_supermarket/main.dart';
 import 'package:bid_on_a_box_supermarket/utils/models/box_class.dart';
 import 'package:bid_on_a_box_supermarket/utils/models/item_class.dart';
+import 'package:bid_on_a_box_supermarket/utils/screens/charity_detail_screen.dart';
 import 'package:bid_on_a_box_supermarket/utils/variables/variables.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -26,19 +27,7 @@ class _NewLotState extends State<NewLotScreen> {
   String _closingTime = "21:00";
   String _collectionTime = "23:00";
   var selectedType;
-  var _charityNames = [
-    "",
-    "Charity 1",
-    "Charity 2",
-    "Charity 3",
-    "Charity 4",
-    "Charity 5",
-    "Charity 6",
-    "Charity 7",
-    "Charity 8",
-    "Charity 9",
-    "Charity 10"
-  ];
+  var selectedCharity;
   var _currentBoxTypeSelected = "";
   var _currentCharityNameSelected = "";
 
@@ -98,88 +87,99 @@ class _NewLotState extends State<NewLotScreen> {
                         ),
                       ),
                     ),
-                    Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: RaisedButton.icon(
-                                label: Text(""),
-                                icon: Icon(Icons.attach_file, size: 30),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30.0)),
-                                onPressed: _getPicture),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: RaisedButton.icon(
+                                  label: Text(""),
+                                  icon: Icon(Icons.attach_file, size: 30),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          30.0)),
+                                  onPressed: _getPicture),
+                            ),
                           ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: RaisedButton.icon(
-                                label: Text(""),
-                                icon: Icon(Icons.camera_enhance, size: 30),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30.0)),
-                                onPressed: _takePicture),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: RaisedButton.icon(
+                                  label: Text(""),
+                                  icon: Icon(Icons.camera_enhance, size: 30),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          30.0)),
+                                  onPressed: _takePicture),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                          border:
-                          Border.all(color: Theme
-                              .of(context)
-                              .buttonColor),
-                          borderRadius: BorderRadius.circular(5.0)),
-                      child: StreamBuilder<QuerySnapshot>(
-                          stream: Firestore.instance
-                              .collection("boxTypes").orderBy(
-                              "type", descending: false)
-                              .snapshots(),
-                          builder: (context, snapshot) {
-                            if (!snapshot.hasData) {
-                              Center(
-                                child: Column(
-                                  children: <Widget>[
-                                    Text("Loading data..."),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 32.0),
-                                      child: LinearProgressIndicator(),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            } else {
-                              List<DropdownMenuItem> typeItems = [];
-                              for (int i = 0;
-                              i < snapshot.data.documents.length;
-                              i++) {
-                                DocumentSnapshot typeSnap =
-                                snapshot.data.documents[i];
-                                typeItems.add(DropdownMenuItem(
-                                  child: Text(
-                                      "${typeSnap.data["type"].toString()}"),
-                                  value: "${typeSnap.data["type"].toString()}",
-                                ));
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            border:
+                            Border.all(color: Theme
+                                .of(context)
+                                .buttonColor),
+                            borderRadius: BorderRadius.circular(5.0)),
+                        child: StreamBuilder<QuerySnapshot>(
+                            stream: Firestore.instance
+                                .collection("boxTypes").orderBy(
+                                "type", descending: false)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return Center(
+                                  child: Column(
+                                    children: <Widget>[
+                                      Text("Loading data..."),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 32.0),
+                                        child: LinearProgressIndicator(),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              } else {
+                                List<DropdownMenuItem> typeItems = [];
+                                for (int i = 0;
+                                i < snapshot.data.documents.length;
+                                i++) {
+                                  DocumentSnapshot typeSnap =
+                                  snapshot.data.documents[i];
+                                  typeItems.add(DropdownMenuItem(
+                                    child: Text(
+                                        "${typeSnap.data["type"].toString()}"),
+                                    value: "${typeSnap.data["type"]
+                                        .toString()}",
+                                  ));
+                                }
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                      right: 8.0, left: 8.0),
+                                  child: DropdownButton(
+                                    // ignore: missing_return
+                                    items: typeItems,
+                                    isExpanded: true,
+                                    underline: null,
+                                    hint: Text("Select a box type"),
+                                    onChanged: (typeValue) {
+                                      setState(() {
+                                        selectedType = typeValue;
+                                      });
+                                    },
+                                    value: selectedType,
+                                  ),
+                                );
                               }
-                              return Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: DropdownButton(
-                                  // ignore: missing_return
-                                  items: typeItems,
-                                  isExpanded: true,
-                                  underline: null,
-                                  hint: Text("Select a box type"),
-                                  onChanged: (typeValue) {
-                                    setState(() {
-                                      selectedType = typeValue;
-                                    });
-                                  },
-                                  value: selectedType,
-                                ),
-                              );
-                            }
-                          }),
+                            }),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
@@ -409,31 +409,70 @@ class _NewLotState extends State<NewLotScreen> {
                                 flex: 6,
                                 child: Container(
                                   decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Theme.of(context).buttonColor),
+                                      border:
+                                      Border.all(color: Theme
+                                          .of(context)
+                                          .buttonColor),
                                       borderRadius: BorderRadius.circular(5.0)),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        right: 4.0, left: 4.0),
-                                    child: DropdownButton<String>(
-                                      //Charity selector
-                                      isExpanded: true,
-                                      hint:
-                                      Text("Select a charity if donating"),
-                                      items: _charityNames.map((String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(value),
-                                        );
-                                      }).toList(),
-                                      value: _currentCharityNameSelected,
-                                      onChanged: (String newCharitySelected) {
-                                        _onDropdownCharitySelected(
-                                            newCharitySelected);
-                                      },
-                                    ),
-                                  ),
-                                )),
+                                  child: StreamBuilder<QuerySnapshot>(
+                                      stream: Firestore.instance
+                                          .collection("charities").orderBy(
+                                          "charityName", descending: false)
+                                          .snapshots(),
+                                      builder: (context, snapshot) {
+                                        if (!snapshot.hasData) {
+                                          return Center(
+                                            child: Column(
+                                              children: <Widget>[
+                                                Text("Loading data..."),
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .only(top: 32.0),
+                                                  child: LinearProgressIndicator(),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        } else {
+                                          List<
+                                              DropdownMenuItem> charityItems = [
+                                          ];
+                                          for (int i = 0;
+                                          i < snapshot.data.documents.length;
+                                          i++) {
+                                            DocumentSnapshot charitySnap =
+                                            snapshot.data.documents[i];
+                                            charityItems.add(DropdownMenuItem(
+                                              child: Text(
+                                                  "${charitySnap
+                                                      .data["charityName"]
+                                                      .toString()}"),
+                                              value: "${charitySnap
+                                                  .data["charityName"]
+                                                  .toString()}",
+                                            ));
+                                          }
+                                          return Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 8.0, left: 8.0),
+                                            child: DropdownButton(
+                                              // ignore: missing_return
+                                              items: charityItems,
+                                              isExpanded: true,
+                                              underline: null,
+                                              hint: Text("Select a charity"),
+                                              onChanged: (charityValue) {
+                                                setState(() {
+                                                  selectedCharity =
+                                                      charityValue;
+                                                });
+                                              },
+                                              value: selectedCharity,
+                                            ),
+                                          );
+                                        }
+                                      }),
+                                ),),
                             Flexible(
                               flex: 2,
                               child: Center(
@@ -444,7 +483,13 @@ class _NewLotState extends State<NewLotScreen> {
                                         color: Theme.of(context).buttonColor),
                                     child: IconButton(
                                         icon: Icon(Icons.info),
-                                        onPressed: null),
+                                      onPressed: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    CharityDetailScreen()));
+                                      },),
                                   ),
                                 ),
                               ),
@@ -600,7 +645,6 @@ class _NewLotState extends State<NewLotScreen> {
       _descriptionController.text = "";
       _weightController.text = "";
       _priceController.text = "";
-      _currentCharityNameSelected = _charityNames[0];
       _charityPCController.text = "";
       _closingDateController.text = DateFormat('dd/MM/yy').format(_currentDate);
       _closingTimeController.text = _closingTime.toString();
