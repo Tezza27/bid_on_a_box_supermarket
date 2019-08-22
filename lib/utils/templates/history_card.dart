@@ -66,8 +66,7 @@ Widget buildHistoryCard(BuildContext context, DocumentSnapshot document) {
                       Padding(
                         padding: const EdgeInsets.only(right: 4.0),
                         child: Column(
-                          //crossAxisAlignment: CrossAxisAlignment.start,
-                          //mainAxisAlignment: MainAxisAlignment.spaceAround,
+
                           children: <Widget>[
                             Text(
                               "End Date:",
@@ -83,8 +82,7 @@ Widget buildHistoryCard(BuildContext context, DocumentSnapshot document) {
                       Padding(
                         padding: const EdgeInsets.only(right: 4.0),
                         child: Column(
-                          //crossAxisAlignment: CrossAxisAlignment.end,
-                          // mainAxisAlignment: MainAxisAlignment.spaceAround,
+
                           children: <Widget>[
                             Text(
                               closeDateFormat,
@@ -101,8 +99,7 @@ Widget buildHistoryCard(BuildContext context, DocumentSnapshot document) {
                       Padding(
                         padding: const EdgeInsets.only(right: 4.0),
                         child: Column(
-                          //crossAxisAlignment: CrossAxisAlignment.start,
-                          //mainAxisAlignment: MainAxisAlignment.spaceAround,
+
                           children: <Widget>[
                             Text(
                               "RRP:",
@@ -116,8 +113,7 @@ Widget buildHistoryCard(BuildContext context, DocumentSnapshot document) {
                         ),
                       ),
                       Column(
-                        //crossAxisAlignment: CrossAxisAlignment.end,
-                        //mainAxisAlignment: MainAxisAlignment.spaceAround,
+
                         children: <Widget>[
                           Text(
                             "£${document["RRP"].toString()}",

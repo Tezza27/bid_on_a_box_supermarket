@@ -18,29 +18,11 @@ void main(){
       accentColor: accent_01Color,
       buttonColor: brand_01Color,
       bottomAppBarColor: brand_01Color,
-//          primaryColorLight: ,
-//          primaryColorDark: ,
-//          canvasColor: ,
+
       scaffoldBackgroundColor: whiteColor,
           cardColor: whiteColor,
-//          dividerColor: ,
-//          focusColor: ,
-//          hoverColor: ,
-//          highlightColor: ,
-//          splashColor: ,
-//          selectedRowColor: ,
-//          unselectedWidgetColor: ,
-//          disabledColor: ,
-//          secondaryHeaderColor: ,
-//          textSelectionColor: ,
-//          cursorColor: ,
-//          textSelectionHandleColor: ,
-//          backgroundColor: ,
-//          dialogBackgroundColor: ,
-//          indicatorColor: ,
-          hintColor: accent_03Color,
-//          errorColor: ,
-//          toggleableActiveColor: ,
+
+      hintColor: accent_03Color,
 
 
 // To map the fonts from the team visual style guide
