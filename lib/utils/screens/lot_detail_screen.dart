@@ -3,6 +3,10 @@ import 'package:bid_on_a_box_supermarket/utils/services/item_detail_data.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+//Unfortunately, I didn't quite get to handling and populating the bidding through Firebase.
+// Similarly, I had intended to get a countdown clock working, along with the time remaining
+//indicator, but time just wasn't on my side.
+
 class LotDetailScreen extends StatelessWidget {
   final document;
 
@@ -288,8 +292,5 @@ class LotDetailScreen extends StatelessWidget {
         ));
   }
 
-//  String _auctionStatus() {
-//    return "Difference";
-//  }
 
 }

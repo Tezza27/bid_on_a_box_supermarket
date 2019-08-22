@@ -3,8 +3,9 @@ import 'dart:io';
 
 import 'package:bid_on_a_box_supermarket/main.dart';
 import 'package:bid_on_a_box_supermarket/utils/models/box_class.dart';
+import 'package:bid_on_a_box_supermarket/utils/models/charity_class.dart';
 import 'package:bid_on_a_box_supermarket/utils/models/item_class.dart';
-import 'package:bid_on_a_box_supermarket/utils/screens/charity_detail_screen.dart';
+import 'package:bid_on_a_box_supermarket/utils/screens/st_petrocs_society_detail.dart';
 import 'package:bid_on_a_box_supermarket/utils/variables/variables.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -28,9 +29,10 @@ class _NewLotState extends State<NewLotScreen> {
   String _collectionTime = "23:00";
   var selectedType;
   var selectedCharity;
+
   var _currentBoxTypeSelected = "";
   var _currentCharityNameSelected = "";
-
+  CharityClass selectedCharityObject;
   List<String> listStringItems = [];
 
   TextEditingController _descriptionController = TextEditingController();
@@ -69,6 +71,8 @@ class _NewLotState extends State<NewLotScreen> {
                           borderRadius: BorderRadius.all(
                             Radius.circular(10.0),
                           )),
+                      //I wanted to have some backup images representing each of the categories, which would
+                      // automatically load from Firebase if a photograph wasn't provided.  I was unable to get as far as that.
                       child: _storedImage != null
                           ? ClipRRect(
                           borderRadius: BorderRadius.circular(10.0),
@@ -442,7 +446,16 @@ class _NewLotState extends State<NewLotScreen> {
                                           i++) {
                                             DocumentSnapshot charitySnap =
                                             snapshot.data.documents[i];
+                                            if (charitySnap
+                                                .data["charityName"] ==
+                                                selectedCharity) {
+                                              selectedCharityObject =
+                                                  _getCharityObject(
+                                                      charitySnap);
+                                            };
+
                                             charityItems.add(DropdownMenuItem(
+
                                               child: Text(
                                                   "${charitySnap
                                                       .data["charityName"]
@@ -485,10 +498,12 @@ class _NewLotState extends State<NewLotScreen> {
                                         icon: Icon(Icons.info),
                                       onPressed: () {
                                         Navigator.push(
+
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    CharityDetailScreen()));
+
+                                                    StPetrocsSocietyScreen()));
                                       },),
                                   ),
                                 ),
@@ -634,11 +649,6 @@ class _NewLotState extends State<NewLotScreen> {
         ));
   }
 
-  void _onDropdownCharitySelected(String newCharitySelected) {
-    setState(() {
-      this._currentCharityNameSelected = newCharitySelected;
-    });
-  }
 
   void _reset() {
     setState(() {
@@ -706,6 +716,7 @@ class _NewLotState extends State<NewLotScreen> {
     String _itemID = "$boxID${index.toString().padLeft(2, "0")}";
     return ItemClass(_itemID, "$boxID", "$itemName");
   }
+
 
   Future<DateTime> _selectDate(BuildContext context,
       {int whichCalendar}) async {
@@ -868,5 +879,31 @@ class _NewLotState extends State<NewLotScreen> {
         _clearEntry();
       }
     });
+  }
+
+//This isn't working yet - time beat me!
+  CharityClass _getCharityObject(DocumentSnapshot charitySnap) {
+    String _charityName = charitySnap["charityName"];
+    String _charityDescription = charitySnap["charityDescription"];
+    String _charityAddress1 = charitySnap["charityAddress1"];
+    String _charityAddress2 = charitySnap["charityAddress2"];
+    String _charityTown = charitySnap["charityTown"];
+    String _charityCounty = charitySnap["charityCounty"];
+    String _charityPostcode = charitySnap["charityPostcode"];
+    String _charityContactName = charitySnap["charityContactName"];
+    String _charityTelephone = charitySnap["charityTelephone"];
+    String _charityMail = charitySnap["charityMail"];
+    return CharityClass(
+        _charityName,
+        _charityDescription,
+        _charityAddress1,
+        _charityAddress2,
+        _charityTown,
+        _charityCounty,
+        _charityPostcode,
+        _charityContactName,
+        _charityTelephone,
+        _charityMail,
+        _charityDescription);
   }
 }
